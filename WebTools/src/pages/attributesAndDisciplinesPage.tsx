@@ -1,3 +1,9 @@
+import { DeferredTalentResolver } from '../components/deferredTalentSelection';
+import {
+  supportsDeferredTalents,
+  finalLifepathTalentErrors,
+  getLifepathTalentChoices,
+} from '../helpers/lifepathTalents';
 import React, { useEffect } from 'react';
 import { Character } from '../common/character';
 import { Navigation } from '../common/navigator';
@@ -71,6 +77,11 @@ const AttributesAndDisciplinesPageBase: React.FC<ICharacterProperties> = ({
   };
 
   const navigateToNextPage = () => {
+    const errors = finalLifepathTalentErrors(character);
+    if (errors.length) {
+      Dialog.show(errors.join('\n'));
+      return;
+    }
     if (character.finishingStep?.attributes.length !== attributeCount) {
       Dialog.show(
         t('SoloFinishingTouchesPage.errorAttributes', {
@@ -126,7 +137,9 @@ const AttributesAndDisciplinesPageBase: React.FC<ICharacterProperties> = ({
     disciplineCount,
   );
 
-  const talents = filterTalentList();
+  const talents = supportsDeferredTalents(character)
+    ? getLifepathTalentChoices(character, StepContext.FinishingTouches)
+    : filterTalentList();
 
   const talentSelection =
     isKlingonWarriorType(character.type) || character.version > 1 ? (
@@ -220,6 +233,7 @@ const AttributesAndDisciplinesPageBase: React.FC<ICharacterProperties> = ({
         {value}
       </div>
 
+      <DeferredTalentResolver character={character} />
       {talentSelection}
 
       <div className="mt-4 d-flex justify-content-end">

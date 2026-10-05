@@ -242,6 +242,7 @@ export class CharacterAdvancementStep {
 }
 
 export class CareerStep {
+  public talentDeferred: boolean = false;
   career?: Career;
   value?: string;
   talent?: SelectedTalent;
@@ -253,6 +254,7 @@ export class CareerStep {
   public copy() {
     const careerStep = new CareerStep(this.career);
     careerStep.value = this.value;
+    careerStep.talentDeferred = this.talentDeferred;
     careerStep.talent = this.talent == null ? null : this.talent.copy();
     return careerStep;
   }
@@ -273,6 +275,7 @@ export class SpeciesAbilityOptions {
 }
 
 export class SpeciesStep {
+  public talentDeferred: boolean = false;
   public readonly species: Species;
   public mixedSpecies: Species;
   public originalSpecies: Species;
@@ -337,6 +340,7 @@ export class SpeciesStep {
 
   copy() {
     const result = new SpeciesStep(this.species);
+    result.talentDeferred = this.talentDeferred;
     result.mixedSpecies = this.mixedSpecies;
     result.originalSpecies = this.originalSpecies;
     result.customSpeciesName = this.customSpeciesName;
@@ -357,6 +361,7 @@ export class SpeciesStep {
 }
 
 export class UpbringingStep {
+  public talentDeferred: boolean = false;
   public readonly upbringing: EarlyOutlookModel;
   public acceptedUpbringing: boolean;
   public discipline: Department;
@@ -406,6 +411,7 @@ export class EnvironmentStep {
 }
 
 export class EducationStep {
+  public talentDeferred: boolean = false;
   public readonly track?: Track;
   public enlisted: boolean;
   public decrementAttributes: Attribute[];
@@ -2207,6 +2213,8 @@ export class Character extends Construct implements IWeaponDiceProvider {
         this.upbringingStep.acceptedUpbringing;
       character.upbringingStep.discipline = this.upbringingStep.discipline;
       character.upbringingStep.focus = this.upbringingStep.focus;
+      character.upbringingStep.talentDeferred =
+        this.upbringingStep.talentDeferred;
       if (this.upbringingStep.talent) {
         character.upbringingStep.talent = this.upbringingStep.talent.copy();
       }
@@ -2231,6 +2239,8 @@ export class Character extends Construct implements IWeaponDiceProvider {
         ? this.educationStep.talent.copy()
         : undefined;
       character.educationStep.value = this.educationStep.value;
+      character.educationStep.talentDeferred =
+        this.educationStep.talentDeferred;
     }
     character.careerStep = this.careerStep?.copy();
     character.finishingStep = this.finishingStep?.copy();
