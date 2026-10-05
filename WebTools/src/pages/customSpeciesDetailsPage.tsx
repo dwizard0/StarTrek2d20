@@ -1,3 +1,10 @@
+import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import {
+  supportsDeferredTalents,
+  isTalentDeferred,
+  lifepathTalentError,
+  getLifepathTalentChoices,
+} from '../helpers/lifepathTalents';
 import React from 'react';
 import { Navigation } from '../common/navigator';
 import { PageIdentity } from './pageIdentity';
@@ -91,12 +98,22 @@ const CustomSpeciesDetailsPageBase: React.FC<
           <Header level={2}>{t('Construct.other.talents')}</Header>
           <div>{renderCrossSpeciesCheckbox()}</div>
           {esotericTalentOption}
-          <SingleTalentSelectionList
-            talents={talents}
-            construct={character}
-            initialSelection={character.speciesStep?.talent}
-            onSelection={(talent) => onTalentSelected(talent)}
+          <ChooseTalentLater
+            character={character}
+            context={StepContext.Species}
           />
+          {!isTalentDeferred(character, StepContext.Species) && (
+            <SingleTalentSelectionList
+              talents={
+                supportsDeferredTalents(character)
+                  ? getLifepathTalentChoices(character, StepContext.Species)
+                  : talents
+              }
+              construct={character}
+              initialSelection={character.speciesStep?.talent}
+              onSelection={(talent) => onTalentSelected(talent)}
+            />
+          )}
         </div>
       ) : (
         <div>
@@ -137,6 +154,11 @@ const CustomSpeciesDetailsPageBase: React.FC<
   };
 
   const onNext = () => {
+    const error = lifepathTalentError(character, StepContext.Species);
+    if (error) {
+      Dialog.show(error);
+      return;
+    }
     if (!character.speciesStep.customSpeciesName) {
       Dialog.show(t('CustomSpeciesDetails.speciesNameWarning'));
       return;
@@ -147,7 +169,11 @@ const CustomSpeciesDetailsPageBase: React.FC<
       return;
     }
 
-    if (isTalentSelectionRequired() && character.speciesStep?.talent == null) {
+    if (
+      isTalentSelectionRequired() &&
+      character.speciesStep?.talent == null &&
+      !isTalentDeferred(character, StepContext.Species)
+    ) {
       Dialog.show('You have not selected a talent.');
       return;
     }

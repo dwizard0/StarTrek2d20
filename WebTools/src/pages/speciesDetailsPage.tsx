@@ -1,3 +1,10 @@
+import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import {
+  supportsDeferredTalents,
+  isTalentDeferred,
+  lifepathTalentError,
+  getLifepathTalentChoices,
+} from '../helpers/lifepathTalents';
 import React from 'react';
 import { Navigation } from '../common/navigator';
 import { PageIdentity } from './pageIdentity';
@@ -166,12 +173,22 @@ const SpeciesDetailsPageBase: React.FC<ISpeciesDetailsProperties> = ({
       return (
         <div>
           <Header level={2}>{t('Construct.other.talents')}</Header>
-          <SingleTalentSelectionList
-            talents={talents}
-            construct={character}
-            initialSelection={character.speciesStep?.talent}
-            onSelection={(talent) => onTalentSelected(talent)}
+          <ChooseTalentLater
+            character={character}
+            context={StepContext.Species}
           />
+          {!isTalentDeferred(character, StepContext.Species) && (
+            <SingleTalentSelectionList
+              talents={
+                supportsDeferredTalents(character)
+                  ? getLifepathTalentChoices(character, StepContext.Species)
+                  : talents
+              }
+              construct={character}
+              initialSelection={character.speciesStep?.talent}
+              onSelection={(talent) => onTalentSelected(talent)}
+            />
+          )}
         </div>
       );
     } else {
@@ -344,13 +361,19 @@ const SpeciesDetailsPageBase: React.FC<ISpeciesDetailsProperties> = ({
   };
 
   const onNext = () => {
+    const talentError = lifepathTalentError(character, StepContext.Species);
+    if (talentError) {
+      Dialog.show(talentError);
+      return;
+    }
     if (isSpecialSpecies() && character.speciesStep.originalSpecies == null) {
       Dialog.show(t('SpeciesDetails.error.originalSpecies'));
     } else if (!character.speciesStep?.isAttributeSelectionComplete) {
       Dialog.show(t('SpeciesDetails.error.attributes'));
     } else if (
       isTalentSelectionRequired() &&
-      character.speciesStep?.talent == null
+      character.speciesStep?.talent == null &&
+      !isTalentDeferred(character, StepContext.Species)
     ) {
       Dialog.show(t('Common.error.talent'));
     } else if (

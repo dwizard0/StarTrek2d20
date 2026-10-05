@@ -1,4 +1,9 @@
 import React, { useEffect } from 'react';
+import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import {
+  isTalentDeferred,
+  supportsDeferredTalents,
+} from '../helpers/lifepathTalentState';
 import { Navigation } from '../common/navigator';
 import Button from 'react-bootstrap/Button';
 import { TalentDescription } from '../components/talentDescription';
@@ -35,10 +40,12 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
 }) => {
   const { t } = useTranslation();
   const talentModel = TalentsHelper.getTalent(TALENT_NAME_UNTAPPED_POTENTIAL);
+  const deferred = isTalentDeferred(character, StepContext.Career);
 
   const onNext = () => {
     if (
       character.version > 1 &&
+      !isTalentDeferred(character, StepContext.Career) &&
       character.careerStep?.talent?.attribute == null
     ) {
       Dialog.show(t('NoviceOrCadetExperiencePage.attribute.error'));
@@ -67,8 +74,16 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
   };
 
   useEffect(() => {
+    if (
+      supportsDeferredTalents(character) &&
+      (isTalentDeferred(character, StepContext.Career) ||
+        character.careerStep?.talent)
+    )
+      return;
     store.dispatch(addCharacterTalent(talentModel, StepContext.Career));
-  }, [talentModel]);
+    // This initialization runs on entry or when choosing now, not on every Redux edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [talentModel, deferred]);
 
   const instruction =
     character.type === CharacterType.Cadet
@@ -95,16 +110,23 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
           </div>
           <div className="col-12 col-lg-6 mt-4">
             <Header level={2}>{t('Construct.other.talent')}</Header>
-            <TalentDescription
-              name={talentModel.localizedDisplayName}
-              description={
-                character.version > 1
-                  ? talentModel.localizedDescription2e
-                  : talentModel.localizedDescription
-              }
+            <ChooseTalentLater
+              character={character}
+              context={StepContext.Career}
             />
+            {!deferred && (
+              <TalentDescription
+                name={talentModel.localizedDisplayName}
+                description={
+                  character.version > 1
+                    ? talentModel.localizedDescription2e
+                    : talentModel.localizedDescription
+                }
+              />
+            )}
           </div>
-          {character.version === 1 ? undefined : (
+          {character.version === 1 ||
+          isTalentDeferred(character, StepContext.Career) ? undefined : (
             <div className="col-12 col-lg-6 mt-4">
               <Header level={2}>{t('Construct.other.attribute')}</Header>
               <InstructionText

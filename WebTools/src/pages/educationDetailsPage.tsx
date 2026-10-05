@@ -1,3 +1,10 @@
+import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import {
+  supportsDeferredTalents,
+  isTalentDeferred,
+  lifepathTalentError,
+  getLifepathTalentChoices,
+} from '../helpers/lifepathTalents';
 import React from 'react';
 import { CharacterType } from '../common/characterType';
 import { Navigation } from '../common/navigator';
@@ -310,14 +317,24 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
     return (
       <div>
         <Header level={2}>{t('Construct.other.talent')}</Header>
-        <SingleTalentSelectionList
-          talents={filterTalentList()}
-          initialSelection={character.educationStep?.talent}
-          construct={character}
-          onSelection={(talent) => {
-            onTalentSelected(talent);
-          }}
+        <ChooseTalentLater
+          character={character}
+          context={StepContext.Education}
         />
+        {!isTalentDeferred(character, StepContext.Education) && (
+          <SingleTalentSelectionList
+            talents={
+              supportsDeferredTalents(character)
+                ? getLifepathTalentChoices(character, StepContext.Education)
+                : filterTalentList()
+            }
+            initialSelection={character.educationStep?.talent}
+            construct={character}
+            onSelection={(talent) => {
+              onTalentSelected(talent);
+            }}
+          />
+        )}
       </div>
     );
   };
@@ -339,7 +356,7 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
   };
 
   const onTalentSelected = (talent?: SelectedTalent) => {
-    if (talent) {
+    if (talent || supportsDeferredTalents(character)) {
       store.dispatch(addCharacterTalent(talent, StepContext.Education));
     } else {
       // ?????
@@ -348,6 +365,11 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
   };
 
   const navigateToNextPage = () => {
+    const talentError = lifepathTalentError(character, StepContext.Education);
+    if (talentError) {
+      Dialog.show(talentError);
+      return;
+    }
     if (character.educationStep?.attributes?.length < 3) {
       Dialog.show(t('SoloEducationDetailsPage.errorAttributes'));
     } else if (character.isEducationDisciplinesIncomplete) {

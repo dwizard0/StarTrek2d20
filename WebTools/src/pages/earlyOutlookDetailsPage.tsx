@@ -1,3 +1,10 @@
+import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import {
+  supportsDeferredTalents,
+  isTalentDeferred,
+  lifepathTalentError,
+  getLifepathTalentChoices,
+} from '../helpers/lifepathTalents';
 import React from 'react';
 import { Navigation } from '../common/navigator';
 import { AttributesHelper } from '../helpers/attributes';
@@ -47,11 +54,22 @@ const EarlyOutlookDetailsPageBase: React.FC<ICharacterProperties> = ({
   };
 
   const navigateToNextPage = () => {
+    const talentError = lifepathTalentError(
+      character,
+      StepContext.EarlyOutlook,
+    );
+    if (talentError) {
+      Dialog.show(talentError);
+      return;
+    }
     if (character.upbringingStep?.discipline == null) {
       Dialog.show(t('UpbringingDetailPage.error.discipline'));
     } else if (!character.upbringingStep?.focus) {
       Dialog.show(t('UpbringingDetailPage.error.focus'));
-    } else if (character.upbringingStep?.talent == null) {
+    } else if (
+      character.upbringingStep?.talent == null &&
+      !isTalentDeferred(character, StepContext.EarlyOutlook)
+    ) {
       Dialog.show(t('UpbringingDetailPage.error.talent'));
     } else {
       const error = determineSelectedTalentExtraErrors(
@@ -123,7 +141,9 @@ const EarlyOutlookDetailsPageBase: React.FC<ICharacterProperties> = ({
     </div>
   );
 
-  const talents = getEarlyOutlookTalents(character);
+  const talents = supportsDeferredTalents(character)
+    ? getLifepathTalentChoices(character, StepContext.EarlyOutlook)
+    : getEarlyOutlookTalents(character);
 
   return (
     <div className="page container ms-0">
@@ -180,14 +200,20 @@ const EarlyOutlookDetailsPageBase: React.FC<ICharacterProperties> = ({
       <div>
         <Header level={2}>{t('Construct.other.talent')}</Header>
         {character.version > 1 ? <TalentSettingsView /> : undefined}
-        <SingleTalentSelectionList
-          talents={talents}
-          initialSelection={character.upbringingStep?.talent}
-          onSelection={(talent) => {
-            onTalentSelected(talent);
-          }}
-          construct={character}
+        <ChooseTalentLater
+          character={character}
+          context={StepContext.EarlyOutlook}
         />
+        {!isTalentDeferred(character, StepContext.EarlyOutlook) && (
+          <SingleTalentSelectionList
+            talents={talents}
+            initialSelection={character.upbringingStep?.talent}
+            onSelection={(talent) => {
+              onTalentSelected(talent);
+            }}
+            construct={character}
+          />
+        )}
       </div>
       <div className="mt-4 d-flex justify-content-end">
         <PageHistoryBasedPreviousButton />

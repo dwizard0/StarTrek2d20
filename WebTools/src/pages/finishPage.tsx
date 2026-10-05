@@ -1,3 +1,6 @@
+import { DeferredTalentResolver } from '../components/deferredTalentSelection';
+import { finalLifepathTalentErrors } from '../helpers/lifepathTalents';
+import { Dialog } from '../components/dialog';
 import React, { useEffect, useState } from 'react';
 import type { AlliedMilitaryDetails, Character } from '../common/character';
 import { CharacterType } from '../common/characterType';
@@ -81,8 +84,21 @@ const FinishPageBase: React.FC<IFinishPageProperties> = ({ character }) => {
     store.dispatch(setCharacterDescription(value));
   };
 
+  const validateTalents = () => {
+    const errors = finalLifepathTalentErrors(
+      store.getState().character.currentCharacter,
+    );
+    if (errors.length) {
+      Dialog.show(errors.join('\n'));
+      return false;
+    }
+    return true;
+  };
+
   const showViewPage = () => {
+    if (!validateTalents()) return;
     setTimeout(() => {
+      if (!validateTalents()) return;
       const c = store.getState().character.currentCharacter;
       const value = marshaller.encodeMainCharacter(c);
       store.dispatch(saveCharacterToLocalStorage(c));
@@ -319,6 +335,7 @@ const FinishPageBase: React.FC<IFinishPageProperties> = ({ character }) => {
   };
 
   function showDialog() {
+    if (!validateTalents()) return;
     setLoadingExport(true);
     import(
       /* webpackChunkName: 'export' */ '../components/characterSheetDialog'
@@ -327,12 +344,13 @@ const FinishPageBase: React.FC<IFinishPageProperties> = ({ character }) => {
         ({ CharacterSheetRegistry }) => {
           setLoadingExport(false);
           setTimeout(() => {
+            if (!validateTalents()) return;
             const c = store.getState().character.currentCharacter;
             store.dispatch(saveCharacterToLocalStorage(c));
             CharacterSheetDialog.show(
               CharacterSheetRegistry.getCharacterSheets(c),
               'sta-character',
-              character,
+              c,
             );
           }, 200);
         },
@@ -560,6 +578,7 @@ const FinishPageBase: React.FC<IFinishPageProperties> = ({ character }) => {
           )}
         </div>
 
+        <DeferredTalentResolver character={character} />
         <div className="button-container mb-5">
           <LoadingButton
             loading={loadingExport}
