@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import type { Character, TokenConfig } from '../common/character';
+import { type Character, ImageConfig, TokenConfig } from '../common/character';
 import { store } from '../state/store';
 import { createNewToken } from '../state/tokenActions';
 import { setCharacter } from '../state/characterActions';
@@ -7,6 +7,11 @@ import { lazy, Suspense } from 'react';
 import { LoadingSpinnerView } from '../common/loadingSpinnerView';
 import { TokenModel } from '../token/model/tokenModel';
 import { IconButton } from '../components/iconButton';
+import { FileUploadDialog } from '../components/fileUploadView';
+import { cyrb53 } from '../common/cyrb53';
+import { saveCharacterToLocalStorage } from '../state/savedConstructActions';
+import { marshaller } from '../helpers/marshaller';
+import { useTranslation } from 'react-i18next';
 
 const TokenView = lazy(() =>
   import(/* webpackChunkName: 'token' */ '../token/view/tokenView').then(
@@ -26,6 +31,26 @@ export const CharacterTokenImage: React.FC<CharacterTokenImageProperties> = ({
   onDeleteToken = () => {},
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const openDialog = () => {
+    const token =
+      character.image && character.image instanceof TokenConfig
+        ? (character.image as TokenConfig)
+        : undefined;
+    new FileUploadDialog().show(
+      () => createToken(token),
+      (config) => saveImage(config),
+    );
+  };
+
+  const saveImage = (config: ImageConfig) => {
+    const hash = cyrb53(marshalledCharacter);
+    character.image = config;
+    store.dispatch(saveCharacterToLocalStorage(character, hash));
+    const value = marshaller.encodeCharacter(character);
+    navigate('/view?s=' + value, { replace: true });
+  };
 
   const createToken = (token?: TokenConfig) => {
     store.dispatch(setCharacter(character));
@@ -43,16 +68,31 @@ export const CharacterTokenImage: React.FC<CharacterTokenImageProperties> = ({
 
   return (
     <div className="d-flex justify-content-center align-items-end">
-      {character.token ? (
+      {character.image && character.image instanceof TokenConfig ? (
         <Suspense fallback={<LoadingSpinnerView />}>
-          <TokenView
-            tokenConfig={character.token}
-            onClick={() => createToken(character.token)}
-          />
+          <TokenView tokenConfig={character.image} onClick={openDialog} />
           {onDeleteToken != null ? (
             <IconButton icon="trash" variant="danger" onClick={onDeleteToken} />
           ) : undefined}
         </Suspense>
+      ) : character.image && character.image instanceof ImageConfig ? (
+        <div className="d-flex justify-content-center align-items-end">
+          <img
+            src={character.image.dataUrl}
+            style={{
+              aspectRatio: 1,
+              width: '250px',
+              maxWidth: '100%',
+            }}
+            role="button"
+            onClick={openDialog}
+            alt={t('Construct.other.characterImage')}
+            title={t('Construct.other.characterImage')}
+          />
+          {onDeleteToken != null ? (
+            <IconButton icon="trash" variant="danger" onClick={onDeleteToken} />
+          ) : undefined}
+        </div>
       ) : (
         <div
           style={{
@@ -63,7 +103,8 @@ export const CharacterTokenImage: React.FC<CharacterTokenImageProperties> = ({
           }}
           className="d-flex justify-content-center align-items-center text-secondary border border-secondary rounded"
           role="button"
-          onClick={() => createToken()}
+          onClick={openDialog}
+          title={t('Construct.other.characterImage')}
         >
           <i className="bi bi-person-square"></i>
         </div>

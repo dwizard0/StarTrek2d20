@@ -82,7 +82,6 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
       return;
     store.dispatch(addCharacterTalent(talentModel, StepContext.Career));
     // This initialization runs on entry or when choosing now, not on every Redux edit.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [talentModel, deferred]);
 
   const instruction =

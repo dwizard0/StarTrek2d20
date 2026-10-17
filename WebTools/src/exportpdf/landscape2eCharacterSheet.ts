@@ -12,7 +12,9 @@ import {
   CareerEventStep,
   Character,
   Division,
+  ImageConfig,
   Promotion,
+  TokenConfig,
 } from '../common/character';
 import type {
   CharacterAdvancementStep,
@@ -72,11 +74,6 @@ import { fontLoader2e } from './fontLoader';
 import { deriveSheetColour } from './characterColour';
 
 export class Landscape2eCharacterSheet extends BaseFormFillingSheet {
-  static readonly page2Column1X = 55.6;
-  static readonly page2Column2X = 226.5;
-  static readonly page2Column3X = 396.1;
-  static readonly page2Column4X = 565.8;
-
   static readonly greyColour: SimpleColor = SimpleColor.from('#979696');
 
   static readonly headingColumn = new Column(73.8, 45, 8.8, 200);
@@ -112,20 +109,18 @@ export class Landscape2eCharacterSheet extends BaseFormFillingSheet {
   }
 
   async fixedTextColumns(additionalPages: PDFPage[], pdf: PDFDocument) {
-    const basicColumn1 = new Column(55.6, 72.6, 479.3, 226.5 + 158.1 - 55.6);
-    const basicColumn2 = new Column(396.1, 72.6, 479.3, 226.5 + 158.1 - 55.6);
-
     const logColumns = [];
+    let secondPageStartColumn = undefined;
     for (let i = additionalPages.length - 1; i >= 0; i--) {
       const page =
         i === additionalPages.length - 1 ? undefined : additionalPages[i + 1];
       const first = logColumns[0];
 
-      const logPage2Column2 = new Column(
-        basicColumn2.start.x,
-        basicColumn2.start.y,
-        basicColumn2.height,
-        basicColumn2.width,
+      const page2Column4 = new Column(
+        565.8,
+        72.6,
+        479.3,
+        158.1,
         page != null && first != null
           ? () => {
               const p = pdf.addPage(page);
@@ -133,34 +128,26 @@ export class Landscape2eCharacterSheet extends BaseFormFillingSheet {
             }
           : undefined,
       );
-      const logPage2Column1 = new Column(
-        basicColumn1.start.x,
-        basicColumn1.start.y,
-        basicColumn1.height,
-        basicColumn1.width,
-        logPage2Column2,
+      const page2Column3 = new Column(396.1, 72.6, 479.3, 158.1, page2Column4);
+      const page2Column2 = new Column(226.5, 72.6, 479.3, 158.1, page2Column3);
+      const page2Column1 = new Column(55.6, 72.6, 479.3, 158.1, page2Column2);
+      logColumns.unshift(
+        page2Column1,
+        page2Column2,
+        page2Column3,
+        page2Column4,
       );
-
-      logColumns.unshift(logPage2Column1, logPage2Column2);
+      secondPageStartColumn = page2Column1;
     }
-
-    const page2Column4 = new Column(565.8, 72.6, 479.3, 158.1);
-    const page2Column3 = new Column(396.1, 72.6, 479.3, 158.1, page2Column4);
-    const page2Column2 = new Column(226.5, 72.6, 479.3, 158.1, page2Column3);
-    const page2Column1 = new Column(55.6, 72.6, 479.3, 158.1, page2Column2);
 
     const talentsColumn3 = new Column(390.6, 361, 200, 162, () => {
       const page = pdf.addPage(additionalPages[0]);
-      return new PageArea(page2Column1, page);
+      return new PageArea(secondPageStartColumn, page);
     });
     const talentsColumn2 = new Column(221.7, 361, 200, 162, talentsColumn3);
     const talentsColumn1 = new Column(51.5, 361, 200, 162, talentsColumn2);
 
-    return {
-      logColumns: logColumns,
-      firstColumn: talentsColumn1,
-      page2: additionalPages[0],
-    };
+    return talentsColumn1;
   }
 
   async populate(pdf: PDFDocument, construct: Construct) {
@@ -173,6 +160,11 @@ export class Landscape2eCharacterSheet extends BaseFormFillingSheet {
     ).then((res) => res.arrayBuffer());
     const blankPdf = await PDFDocument.load(pdfBytes);
 
+    const pdfBytes2 = await fetch(
+      '/static/pdf/STA_2e_Landscape_Sheet_blank2.pdf',
+    ).then((res) => res.arrayBuffer());
+    const blankPdf2 = await PDFDocument.load(pdfBytes2);
+
     const character = construct as Character;
     const extraPages = [];
     for (
@@ -181,7 +173,7 @@ export class Landscape2eCharacterSheet extends BaseFormFillingSheet {
       i++
     ) {
       // making an assumption here that we can write at least 4 improvements per page
-      const [p] = await pdf.copyPages(blankPdf, [0]);
+      const [p] = await pdf.copyPages(i % 2 === 0 ? blankPdf2 : blankPdf, [0]);
       extraPages.push(p);
     }
 
@@ -194,10 +186,7 @@ export class Landscape2eCharacterSheet extends BaseFormFillingSheet {
     });
 
     this.writeLabels(page, character);
-    const { firstColumn, logColumns, page2 } = await this.fixedTextColumns(
-      extraPages,
-      pdf,
-    );
+    const firstColumn = await this.fixedTextColumns(extraPages, pdf);
     let nextArea = await this.writeRoleAndTalents(page, character, firstColumn);
 
     if (construct.stereotype !== Stereotype.Npc) {
@@ -214,62 +203,27 @@ export class Landscape2eCharacterSheet extends BaseFormFillingSheet {
         character.careerEvents?.filter((e) => e.notes?.length)?.length) &&
       nextArea != null
     ) {
-      let y = undefined;
-      if (
-        nextArea != null &&
-        (Landscape2eCharacterSheet.page2Column1X === nextArea.column.start.x ||
-          Landscape2eCharacterSheet.page2Column3X === nextArea.column.start.x)
-      ) {
-        y = nextArea.column.start.y;
-        const newLayoutColumn =
-          Landscape2eCharacterSheet.page2Column1X === nextArea.column.start.x
-            ? logColumns[0]
-            : logColumns[1];
-        nextArea = new PageArea(
-          newLayoutColumn.bottomAfter(y - newLayoutColumn.start.y),
-          nextArea.page,
-        );
-      } else if (
-        nextArea != null &&
-        Landscape2eCharacterSheet.page2Column2X === nextArea.column.start.x
-      ) {
-        const newLayoutColumn = logColumns[1];
-        nextArea = new PageArea(newLayoutColumn, nextArea.page);
-      } else if (
-        nextArea != null &&
-        Landscape2eCharacterSheet.page2Column4X === nextArea.column.start.x
-      ) {
-        const newLayoutColumn = logColumns[2];
-        nextArea = new PageArea(newLayoutColumn, extraPages[1]);
-      } else if (
-        nextArea != null &&
-        ![
-          Landscape2eCharacterSheet.page2Column1X,
-          Landscape2eCharacterSheet.page2Column2X,
-          Landscape2eCharacterSheet.page2Column3X,
-          Landscape2eCharacterSheet.page2Column4X,
-        ].includes(nextArea.column.start.x)
-      ) {
-        const page = pdf.addPage(page2);
-        nextArea = new PageArea(logColumns[0], page);
+      if (nextArea.column?.height >= 40) {
+        nextArea = nextArea.bottomAfter(10);
       } else {
-        nextArea = undefined;
+        nextArea = nextArea.areaWithAtLeast(40);
       }
-
-      if (nextArea != null) {
-        this.writeLogEntries(
-          construct as Character,
-          nextArea.areaWithAtLeast(40),
-          colour,
-        );
-      }
+      this.writeLogEntries(construct as Character, nextArea, colour);
     }
   }
 
   async fillCharacterImage(pdf: PDFDocument, character: Character) {
-    if (character.token) {
-      const tokenBytes = await TokenHelper.renderToken(character.token);
+    if (character.image && character.image instanceof TokenConfig) {
+      const tokenBytes = await TokenHelper.renderToken(character.image);
       const image = await pdf.embedPng(tokenBytes);
+      try {
+        pdf.getForm().getButton('Image35_af_image').setImage(image);
+      } catch {
+        // name changed...? ignore it.
+        console.log('Image button not found in PDF');
+      }
+    } else if (character.image && character.image instanceof ImageConfig) {
+      const image = await this.embedImage(pdf, character.image);
       try {
         pdf.getForm().getButton('Image35_af_image').setImage(image);
       } catch {
@@ -294,9 +248,9 @@ export class Landscape2eCharacterSheet extends BaseFormFillingSheet {
       this.headingFont,
       9,
       Landscape2eCharacterSheet.greyColour,
-      TextAlign.Left,
+      TextAlign.Centre,
     );
-    nextArea = nextArea.bottomAfter(23);
+    nextArea = nextArea.bottomAfter(12);
 
     const logEntries: (
       | LogEntry

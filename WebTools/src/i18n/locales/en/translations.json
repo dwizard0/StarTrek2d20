@@ -239,6 +239,14 @@
 
     "ExtraStarshipTalentChoice.instruction": "This spaceframe requires you to make selections for some of the standard spaceframe talents.",
 
+    "FileUploadDialog.title": "Character Image",
+    "FileUploadDialog.instruction": "Choose an image to accompany your character: either a token from the token builder, or a custom image (JPG or PNG only).\n\nIdeal custom images are square; they'll be resized to 450x450px.",
+
+    "FileUploadDialog.drag.instruction": "Drag-and-drop an image here or click to select a file from your computer.",
+
+    "FileUploadDialog.option.token": "Token",
+    "FileUploadDialog.option.image": "Image",
+
     "FinalStarshipDetails.instruction": "Your ship is almost complete. It just needs a few final touches.",
 
     "FinalStarshipDetails.name.instruction": "Every Starship needs a name. There is no universal convention for the naming of ships, often naming them after locations, important historical persons (normally only the person’s surname), ancient ships, mythical figures, or even more abstract ideals, virtues, or concepts. In many cases, these vague naming conventions overlap — a ship may be named after an ancient ship that was itself named after a location, for example — but this shouldn’t cause any issues.\n\nThe name should ideally be a single word or, more rarely, two.",
@@ -619,6 +627,8 @@
     "UpbringingDetailPage.error.talent": "You must select a talent before proceeding.",
     "UpbringingDetailPage.error.focus": "You need to type in a Focus. Choose from the suggestions if you cannot come up with your own.",
 
+    "UpbringingDetailPage.notes.instruction": "Describe this stage of your character's early years in more detail.",
+
     "Common.button.random": "Random",
     "Common.button.advanced": "Advanced",
     "Common.button.select": "Select",
@@ -701,6 +711,7 @@
 
     "Construct.other.careerEvents": "Career Events",
     "Construct.other.careerPath": "Career Path",
+    "Construct.other.characterImage": "Character Image",
     "Construct.other.characterRole": "Character Role",
     "Construct.other.characterType": "Character Type",
     "Construct.other.crew": "Crew",
@@ -2718,6 +2729,10 @@
     "Species.grazerite.traitDescription2e": "See pg. 48 the _Species Sourcebook_",
     "Species.grazerite.description2e": "The Grazerite are a peaceful people whose homeworld, Grazer, is one of the harsher examples of the far ends of the Class-M classification. The three main continents are predominately covered by extensive mountain ranges that reach as far as 10 kilometers above sea level. The Grazerites’ evolutionary development has incorporated not only traditional humanoid traits—but also those of Bovidae—giving them goatlike physical features. Grazerites are a peaceful people with a natural sense of curiosity. Grazerites have a deep dislike of conflict and actively avoid it if possible. Grazerite officers in Starfleet pursue careers in most fields—but it is nearly unheard of to see them serving as tactical or security officers. In Grazerite society, it is considered impolite (bordering on indecent) to leave one’s horns and hands uncovered, and thus Grazerites are usually seen with gloves and a headwrap.",
 
+    "Species.hirogen.name": "Hirogen",
+    "Species.hirogen.description": "Once, long ago, the Hirogen’s grand empire stretched across a massive expanse of space, maintained by their advanced technology and relentless will for conquest. A hundred, thousand years ago, their territory covered much of the Delta Quadrant and wrapped around the galactic core as far as the Alpha Quadrant. Few signs of this empire are left, with the most noteworthy being their communications relay network. Since their apex, Hirogen society has almost entirely collapsed, with the populace scattering across the Quadrant in nomadic packs. \n\nThe Hirogen have lost their ability to innovate or create and can barely even maintain their more advanced technology. What remains of Hirogen society is entirely centered around hunting: the pursuit of worthy prey and the challenge of claiming a trophy. The more unusual the relic of the hunt, the more status awarded the hunter. Their social structure was organized into packs of male hunters led by the Alpha, who was the strongest hunter. The second-in-command of a pack was the Beta, who became the Alpha if the first Alpha died. There are numerous rituals and ceremonies related to the hunt, including applying paint to faces and helmets, and studying one’s prey to understand their capabilities. Even choosing a weapon is given ceremonial importance, with each hunt requiring the proper arsenal.\n\nAll Hirogen hunters wear ceremonial armour, which protects them from small arms and wards against rapid changes in pressure. The armour has a removable helmet and optional face mask that can filter out dust or provide as secondary air source.",
+    "Species.hirogen.traitDescription": "Most Hirogen are larger than humans, being comparable in height to Klingons and Jem’Hadar, and possess physical strength comparable to the latter. Their immune system is heightened, and neutralizes foreign pathogens and chemicals, rendering most sedatives ineffective. Their biochemistry has been altered to aid in hunting, and Hirogen have excellent vision and emit no scent that would alert their prey. Most Hirogen lack basic empathy, seeing other intelligent and self-aware beings as potential prey.",
+
     "Species.hologram.name": "Hologram",
     "Species.hologram.soloDescription": "Holograms can be programmed to any specification, though the nature of their holomatrix means that they are essentially impervious to direct physical harm – they can allow energy and objects to pass through them at will. However, they are unable to go anywhere that lacks holographic emitters that can project their image and forcefields, and those emitters can be damaged even if the holograms themselves cannot. Holograms also tend not to receive much respect or consideration from flesh- and-blood people, who may see them as tools at best or annoyances at worst. While the majority of holograms are no more sentient than a character in a holo-novel, under the right circumstances, they can become self-aware and deserve the same rights as any biological sentient life-form. Holograms may also have a second species trait, reflecting the species they were designed to emulate.",
     "Species.hologram.traitDescription2e": "See pg. 50 the _Species Sourcebook_",
@@ -3805,6 +3820,10 @@
 
     "Talent.bornToFight.description2e": "The character may reroll one d20 when making an attack. In addition, if an attack is successful, the character generates 1 bonus Momentum which may only be spent to increase the Severity of the attack. Bonus Momentum may not be saved.",
 
+    "Talent.bruteForceSpecialRule": "Brute Force",
+
+    "Talent.bruteForceSpecialRule.description": "See pg. 51 of the _Allies and Adversaries_ book.",
+
     "Talent.calibratedMunitions": "Calibrated Munitions",
 
     "Talent.calibratedMunitions.description": "You’ve spent many duty hours carefully tuning and refining the ship’s weapon systems. When you use the Calibrate Weapons minor action (page 305 of the core rulebook), the weapon’s damage on your next attack increases by 2 instead of 1. In addition, when you fire a weapon with the **Calibration** quality, increase its damage by 1.",
@@ -4202,6 +4221,10 @@
     "Talent.dualEnvironment.description2e": "The ship is outfitted with redundant system rooms that can be filled with gases or liquids that allow crew members requiring different atmospheric conditions to work side by side with the rest of the crew. A character who is in a redundant system room may assist others in the connected system room as if they were in the same room.",
     "Talent.dualEnvironment.soloDescription": "The ship is outfitted with redundant system rooms that can be filled with gases or liquids that allow crew members requiring different atmospheric conditions to work side by side with the rest of the crew. In addition, passages that can be filled with the necessary liquids or gases run parallel to all passages in the ship, allowing these crew members to move freely throughout.",
 
+    "Talent.dubiousProvenanceSpecialRule": "Dubious Provenance",
+
+    "Talent.dubiousProvenanceSpecialRule.description": "See pg. 70 of the _Allies and Adversaries_ book.",
+
     "Talent.durability": "Durability",
 
     "Talent.durability.description": "Whether through genetic engineering or cybernetic implants, you’re more durable than most people. You gain Protection 2.",
@@ -4452,6 +4475,10 @@
     "Talent.followMyLead.description": "Once per scene, when you succeed at a Task during combat or another perilous situation, you may spend one Determination. If you do, choose a single ally. The next Task that ally attempts counts as having assistance from you, using your Presence + Command.",
     "Talent.followMyLead.description2e": "When you succeed at a task during combat or another perilous situation, you may spend Determination. If you do, choose a single ally who can hear you. The next task that ally attempts counts as having assistance from you, using your **Presence + Command**. On this task, do not roll your assistance die: it counts as having already rolled a 1.",
 
+    "Talent.fontOfKnowledgeSpecialRule": "Font of Knowledge",
+
+    "Talent.fontOfKnowledgeSpecialRule.description": "See pg. 70 of the _Allies and Adversaries_ book.",
+
     "Talent.formerInitiate": "Former Initiate",
 
     "Talent.formerInitiate.description": "You joined the Initiate Program, hoping to be chosen by the Symbiosis Commission to become Joined. As there are far more Initiates than there are Symbionts, you were one of the many who failed, but the quality of even a failed initiate is enough for Starfleet to recruit you. When you attempt a Task using Control or Reason, and spend Determination to buy a bonus d20 for that Task, you may re-roll your dice pool. Former Initiate cannot be taken if the character has the Joined Talent — they are mutually exclusive.",
@@ -4570,9 +4597,13 @@
 
     "Talent.hunkerDown.description2e": "Making good use of your surroundings for protection is one of the hallmarks of a skilled soldier. Whenever you take cover, you may count the Potency of any location trait that represents that cover by +1.",
 
-    "Talent.huntersSenses": "Hunder's Senses",
+    "Talent.huntersSenses": "Hunter's Senses",
 
     "Talent.huntersSenses.description2e": "See pg. 103 of the _Species Sourcebook_",
+
+    "Talent.huntersSkillHirogentTalent": "Hunter's Skill",
+
+    "Talent.huntersSkillHirogentTalent.description": "You are dangerous predator, focused on taking down your target. Once per mission, as a Minor Action you can study a target and designate it to be your prey. Whenever you attempt a Task to track your prey may re-roll one d20. Additionally, the first time you attack your prey, you may re-roll any number of d20s. However, you are driven to bring the hunt to completion and increase the difficulty of non-lethal attacks you make against your prey by 1.",
 
     "Talent.hyperAgile": "Hyper-Agile",
 
@@ -4584,6 +4615,9 @@
     "Talent.iKnowMyShip.description2e": "Whenever you attempt a task to determine the source of a technical problem with your ship, the first bonus d20 you purchase is free.",
 
     "Talent.imADoctorNotA": "I'm a Doctor, Not a...",
+    "Talent.illicitGoodsSpecialRule": "Illicit Goods",
+
+    "Talent.illicitGoodsSpecialRule.description": "See pg. 83 of the _Allies and Adversaries_ book.",
 
     "Talent.imADoctorNotA.description": "When this Talent is purchased, select a Discipline with a score of 1. Once per scene, before attempting a Task using the selected Discipline, a point of Determination may be spent to substitute the character’s Medicine Score in place of that Discipline. This does not have to be linked to a Value.",
     "Talent.imADoctorNotA.description2e": "When you select this talent, choose one of your departments, with which you have a score of 1. When you attempt a task using the selected department, and you spend a point of Determination on that task, you may use your Medicine score instead of that department. The normal limits of spending Determination apply.",
@@ -5044,6 +5078,10 @@
 
     "Talent.noHesitation.description2e": "At the start of any round in an action scene, you may add 1 Threat to take the first turn, regardless of who would otherwise have acted first.",
 
+    "Talent.noIdleThreatSpecialRule": "No Idle Threat",
+
+    "Talent.noIdleThreatSpecialRule.description": "See pg. 67 of the _Allies and Adversaries_ book",
+
     "Talent.nomadicHeritage": "Nomadic Heritage",
 
     "Talent.nomadicHeritage.description2e": "Generations of traversing the stars ingrained a natural affinity for navigation and positioning. The character may reroll a d20 during any task associated with positioning, course determination and other forms of navigation.",
@@ -5320,6 +5358,10 @@
 
     "Talent.quantumSlipstreamBurstDrive.description": "This experimental drive allows the ship to enter quantum slipstream for 30 minutes at a time, moving the ship up to 150 light-years before shutting down. The drive requires 12 hours to reset. As experimental technology, this drive may require extensive maintenance and be prone to failure. This is an independent system, so the crew may operate the warp drive in between slipstream bursts.",
 
+    "Talent.quickEfficientAndDeadlySpecialRule": "Quick, Efficient and Deadly",
+
+    "Talent.quickEfficientAndDeadlySpecialRule.description": "See pg. 83 of the _Allies and Adversaries_ book.",
+
     "Talent.quickLearner": "Quick Learner",
 
     "Talent.quickLearner.description2e": "See pg. 87 of the _Species Sourcebook_",
@@ -5543,6 +5585,10 @@
 
     "Talent.showOff.description": "You tend to show off, sometimes doing things the hard way just to demonstrate that you can. When you attempt a task, you may choose to increase the Difficulty by 1. If you succeed, you gain 2 bonus Momentum. Bonus Momentum cannot be saved.",
 
+    "Talent.significantRelicsSpecialRule": "Significant Relics",
+
+    "Talent.significantRelicsSpecialRule.description": "See pg. 70 of the _Allies and Adversaries_ book.",
+
     "Talent.siphoningShields": "Siphoning Shields",
 
     "Talent.siphoningShields.description2e": "When the ship is hit by an energy weapon, after the attack is resolved, you may add 2 Threat to restore Shields equal to the ship’s Security department.",
@@ -5568,6 +5614,10 @@
     "Talent.specializedShuttlebay": "Specialized Shuttlebay",
 
     "Talent.specializedShuttlebay.description": "_Akira_-class vessels are built with a shuttlebay running the length of the saucer section, allowing small craft to depart from the prow and return safely via the aft. Any friendly small craft within Close range may count the ship as providing Cover (+1 Difficulty on attacks targeting them). Any small craft launching from the bay may take one additional helm minor action at no additional cost after they launch.",
+
+    "Talent.specialtyGoodsSpecialRule": "Specialty Goods",
+
+    "Talent.specialtyGoodsSpecialRule.description": "See pg. 68 of the _Allies and Adversaries_ book.",
 
     "Talent.spikedTail": "Spiked Tail",
 
@@ -5713,6 +5763,10 @@
 
     "Talent.tacticalVoice.description2e": "See pg. 129 of the _Species Sourcebook_",
 
+    "Talent.takeThemAliveSpecialRule": "Taken them Alive",
+
+    "Talent.takeThemAliveSpecialRule.description": "See pg. 84 of the _Allies and Adversaries_ book.",
+
     "Talent.teacher": "Teacher",
 
     "Talent.teacher.description2e": "When you create a trait for an ally that represents your guidance or advice, that ally may re-roll one d20 on a single task they attempt which benefits from that trait.",
@@ -5784,6 +5838,10 @@
 
     "Talent.theShroud.description": "See pg. 59 of the _Species Sourcebook_",
 
+    "Talent.theShroudSpecialRule": "The Shroud",
+
+    "Talent.theShroudSpecialRule.description": "See pg. 51 of the _Allies and Adversaries_ book.",
+
     "Talent.theSpiceOfLife": "The Spice of Life",
 
     "Talent.theSpiceOfLife.description": "See pg. 67 of the _Species Sourcebook_",
@@ -5829,6 +5887,11 @@
 
     "Talent.toBattle.description2e": "See pg. 65 of the _Species Sourcebook_",
 
+    "Talent.toolsOfTheHuntHirogenTalent": "Tools of the Hunt",
+
+    "Talent.toolsOfTheHuntHirogenTalent.description": "You keep the ritual equipment of a Hirogen hunter close at hand. This includes the armoured pressure suit of the Hirogen. This armour grants 2[D] of Resistance and confers the Trait: Environment Suit. You also own a scythe-like bladed weapon known as a talon, used to prolong the kill of a captured or cornered prey. The talon is a melee weapon with the following profile: Melee, 1[D], Vicious 1, Size 1 H, and the Debilitating Quality.",
+    "Talent.toolsOfTheHuntHirogenTalent.description2e": "You keep the ritual equipment of a Hirogen hunter close at hand. This includes the armoured pressure suit of the Hirogen. This armour grants 2 Protection and confers the Trait: Environment Suit. You also own a scythe-like bladed weapon known as a talon, used to prolong the kill of a captured or cornered prey. The talon is a melee weapon with the following profile: Melee, 3, Vicious 1, Size 1 H, and the Debilitating Quality.",
+
     "Talent.toolUser": "Tool User",
 
     "Talent.toolUser.description2e": "While not sentient or self-aware, these creatures have a nervous system advanced enough to be able to manipulate the environment somehow in their favor. These creatures can be taught how to use simple devices or tools, or perhaps can learn through observation.",
@@ -5865,6 +5928,10 @@
     "Talent.tracker": "Tracker",
 
     "Talent.tracker.description": "You can follow even the faintest of tracks. When you attempt a task to track animals, people, or ground vehicles, the first d20 you buy is free. If the tracking was done as part of an extended task then the roll gains Progression 1.",
+
+    "Talent.tradeSpecialRule": "Trade",
+
+    "Talent.tradeSpecialRule.description": "See pg. 68 of the _Allies and Adversaries_ book.",
 
     "Talent.transformativeTreatments": "Transformative Treatments",
 
@@ -6193,6 +6260,10 @@
     "Weapon.personal.sonaPlasmaDisruptorShotgun.name": "Son'a Plasma Disruptor Shotgun",
 
     "Weapon.personal.tanQalanqSword.name": "Tan Qalanq Sword",
+
+    "Weapon.personal.hirogenKukri.name": "Hirogen Kukri",
+
+    "Weapon.personal.tetryonRifle.name": "Tetryon Rifle",
 
     "Weapon.personal.tzenkethiHeavyBlade.name": "Tzenkethi Grade-AA Heavy Blade",
 

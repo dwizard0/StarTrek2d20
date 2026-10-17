@@ -513,8 +513,9 @@ export class SpeciesRestrictions {
       ].includes(species);
     } else if (extra === ExtraType.SecurityHelmet) {
       return (
-        uniformEra === UniformEra.MonsterMaroon &&
-        !SpeciesRestrictions.isRubberHeaded(species)
+        [UniformEra.MonsterMaroon, UniformEra.TheMotionPicture].includes(
+          uniformEra,
+        ) && !SpeciesRestrictions.isRubberHeaded(species)
       );
     } else if (extra === ExtraType.Visor) {
       return (

@@ -5590,6 +5590,7 @@ export class Talents {
       [
         new SourcePrerequisite(Source.SpeciesSourcebook),
         new SpeciesPrerequisite(Species.JemHadar, false),
+        new NotPrerequisite(new StereotypePrerequisite(Stereotype.Npc)),
       ],
       1,
       new TalentCategorization(TalentCategory.Species, Species.JemHadar),
@@ -8408,7 +8409,10 @@ export class Talents {
       'Whenever a Bodyguard attempts a Task to notice or detect an enemy or hazard, they may re-roll one d20.',
       [
         new StereotypePrerequisite(Stereotype.Npc),
-        new SpecializationPrerequisite(Specialization.Bodyguard),
+        new SpecializationPrerequisite(
+          Specialization.Bodyguard,
+          Specialization.JemHadarGuard,
+        ),
       ],
       1,
       new TalentCategorization(TalentCategory.General),
@@ -9112,9 +9116,11 @@ export class Talents {
       [
         new StereotypePrerequisite(Stereotype.Npc),
         new Version2Prerequisite(),
-        new SpeciesPrerequisite(Species.Cardassian),
         new AnyOfPrerequisite(
-          new SpecializationPrerequisite(Specialization.ObsidianOrderOperative),
+          new SpecializationPrerequisite(
+            Specialization.ObsidianOrderOperative,
+            Specialization.Assassin,
+          ),
           new NoSpecializationPrerequisite(),
         ),
         new SourcePrerequisite(Source.AlliesAndAdversaries),
@@ -9154,6 +9160,193 @@ export class Talents {
       ],
       1,
       new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'Specialty Goods (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(
+            Specialization.IndependentTraderCaptain,
+            Specialization.SketchyTraderCaptain,
+            Specialization.FerengiDaiMon,
+            Specialization.FerengiMerchant,
+          ),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'Trade (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(
+            Specialization.IndependentTraderCaptain,
+            Specialization.SketchyTraderCaptain,
+            Specialization.FerengiDaiMon,
+            Specialization.FerengiMerchant,
+            Specialization.Smuggler,
+          ),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'Significant Relics (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(
+            Specialization.IndependentArchaeologist,
+          ),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'Dubious Provenance (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(
+            Specialization.IndependentArchaeologist,
+          ),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'Font of Knowledge (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(
+            Specialization.IndependentArchaeologist,
+          ),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'Quick, Efficient, and Deadly (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(Specialization.Assassin),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'Illicit Goods (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(
+            Specialization.Smuggler,
+            Specialization.SketchyTraderCaptain,
+          ),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'Brute Force (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(Specialization.JemHadarGuard),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      'The Shroud (Special Rule)',
+      '',
+      [
+        new StereotypePrerequisite(Stereotype.Npc),
+        new Version2Prerequisite(),
+        new SpeciesPrerequisite(Species.JemHadar, false),
+        new AnyOfPrerequisite(
+          new SpecializationPrerequisite(Specialization.JemHadarGuard),
+          new NoSpecializationPrerequisite(),
+        ),
+        new SourcePrerequisite(Source.AlliesAndAdversaries),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.SpecialRule),
+      true,
+    ),
+    new TalentModel(
+      "Hunter's Skill (Hirogen Talent)",
+      '',
+      [
+        new SpeciesPrerequisite(Species.Hirogen, true),
+        new SourcePrerequisite(Source.ContinuingMissions),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.Species, Species.Hirogen),
+      true,
+    ),
+    new TalentModel(
+      'Tools of the Hunt (Hirogen Talent)',
+      '',
+      [
+        new SpeciesPrerequisite(Species.Hirogen, true),
+        new SourcePrerequisite(Source.ContinuingMissions),
+      ],
+      1,
+      new TalentCategorization(TalentCategory.Species, Species.Hirogen),
       true,
     ),
     new TalentModel(

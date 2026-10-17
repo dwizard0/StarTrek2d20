@@ -6,7 +6,11 @@ import { ReadableTalentModel } from './talentWriter';
 import type { RoleModel } from '../helpers/roles';
 import { RolesHelper } from '../helpers/roles';
 import type { SpeciesAbility } from '../helpers/speciesAbility';
-import type { Character, SpeciesAbilityOptions } from '../common/character';
+import type {
+  Character,
+  ImageConfig,
+  SpeciesAbilityOptions,
+} from '../common/character';
 import {
   TALENT_NAME_ADDITIONAL_PROPULSION_SYSTEM,
   TALENT_NAME_AUGMENTED_ABILITY,
@@ -37,6 +41,9 @@ import { greyColour2e } from './colourProvider2e';
 import { TextAlign } from './textAlign';
 import { FontOptions } from './fontOptions';
 import { Paragraph } from './paragraph';
+import Pica from 'pica';
+
+const pica = Pica();
 
 export class SpeciesAbilityAndOptions {
   readonly ability: SpeciesAbility;
@@ -128,6 +135,34 @@ export abstract class BasicGeneratedSheet implements ICharacterSheet {
       }
     });
     return fontSize;
+  }
+
+  async embedImage(pdf: PDFDocument, image: ImageConfig) {
+    const tokenBytes = image.imageBytes;
+    if ('image/jpeg' === image.type?.toLocaleLowerCase()) {
+      return await pdf.embedJpg(tokenBytes);
+    } else if ('image/png' === image.type?.toLocaleLowerCase()) {
+      return await pdf.embedPng(tokenBytes);
+    } else {
+      const htmlImage = new Image();
+      htmlImage.src = image.dataUrl;
+      const sourceCanvas = document.createElement('canvas');
+      sourceCanvas.width = 450;
+      sourceCanvas.height = 450;
+      const ctx = sourceCanvas.getContext('2d');
+
+      ctx.drawImage(htmlImage, 0, 0, 450, 450);
+
+      const destCanvas = document.createElement('canvas');
+      destCanvas.width = 450;
+      destCanvas.height = 450;
+
+      const resultCanvas = await pica.resize(sourceCanvas, destCanvas);
+
+      const blob = await pica.toBlob(resultCanvas, 'image/png');
+      const png = await blob.arrayBuffer();
+      return await pdf.embedPng(png);
+    }
   }
 
   writeCharacterDescription(

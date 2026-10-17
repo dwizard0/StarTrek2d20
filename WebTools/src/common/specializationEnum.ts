@@ -45,6 +45,7 @@ export enum Specialization {
   TzenkethiSoldier,
   TholianWarrior,
   TholianEnforcer,
+  HirogenHunter,
 
   BreenThot,
   BreenWarrior,
@@ -58,6 +59,7 @@ export enum Specialization {
   Child,
   CivilianDoctor,
   Journalist,
+  IndependentArchaeologist,
 
   Pirate,
   InformationBroker,
@@ -66,11 +68,15 @@ export enum Specialization {
   Smuggler,
   SketchyTraderCaptain,
   Terrorist,
+  Assassin,
+  OrionSlaver,
 
   BorgTacticalDrone,
   BorgTechnicalDrone,
   BorgMedicalDrone,
   BorgAdjunctDrone,
+
+  JemHadarGuard,
 }
 
 export const allSpecializations = () => {

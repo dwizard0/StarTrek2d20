@@ -55,6 +55,7 @@ import {
 } from './characterAssembly';
 import type { TokenModel } from '../token/model/tokenModel';
 import { isKlingonWarriorType } from '../helpers/klingonWarrior';
+import { Buffer } from 'buffer';
 
 export enum Division {
   Command,
@@ -367,6 +368,7 @@ export class UpbringingStep {
   public discipline: Department;
   public focus?: string;
   public talent?: SelectedTalent;
+  public notes?: string;
 
   constructor(upbringing: EarlyOutlookModel, accepted: boolean = true) {
     this.upbringing = upbringing;
@@ -383,6 +385,17 @@ export class UpbringingStep {
           this.upbringing.attributeRebelPlus2,
           this.upbringing.attributeRebelPlus1,
         ];
+  }
+
+  copy() {
+    const result = new UpbringingStep(this.upbringing);
+    result.acceptedUpbringing = this.acceptedUpbringing;
+    result.discipline = this.discipline;
+    result.focus = this.focus;
+    result.talent = this.talent?.copy();
+    result.talentDeferred = this.talentDeferred;
+    result.notes = this.notes;
+    return result;
   }
 
   get description() {
@@ -532,6 +545,28 @@ export class TokenConfig {
   }
 }
 
+export class ImageConfig {
+  readonly type: string;
+  readonly contents: string;
+
+  constructor(type: string, contents: string) {
+    this.type = type;
+    this.contents = contents;
+  }
+
+  get imageBytes() {
+    return Uint8Array.from(Buffer.from(this.contents, 'base64'));
+  }
+
+  get dataUrl() {
+    return 'data:' + this.type + ';base64,' + this.contents;
+  }
+
+  copy() {
+    return new ImageConfig(this.type, this.contents);
+  }
+}
+
 export class Character extends Construct implements IWeaponDiceProvider {
   public static ABSOLUTE_MAX_ATTRIBUTE = 12;
   public static ABSOLUTE_MAX_DEPARTMENT = 5;
@@ -573,7 +608,7 @@ export class Character extends Construct implements IWeaponDiceProvider {
 
   public description?: string;
   public legacyMode: boolean;
-  public token?: TokenConfig;
+  public image?: TokenConfig | ImageConfig;
 
   constructor() {
     super(Stereotype.MainCharacter);
@@ -999,7 +1034,8 @@ export class Character extends Construct implements IWeaponDiceProvider {
     let stress = this.attributes[Attribute.Fitness];
     if (
       this.version !== 1 &&
-      this.stereotype === Stereotype.SupportingCharacter
+      this.stereotype === Stereotype.SupportingCharacter &&
+      !this.supportingStep?.supervisory
     ) {
       if (this.values.length === 1) {
         stress = Math.ceil(stress / 2);
@@ -1438,6 +1474,11 @@ export class Character extends Construct implements IWeaponDiceProvider {
       ) {
         result.push(PersonalWeapons.instance(this.version).tanQalanqSword);
       } else if (
+        this.npcGenerationStep?.specialization === Specialization.HirogenHunter
+      ) {
+        result.push(PersonalWeapons.instance(this.version).hirogenKukri);
+        result.push(PersonalWeapons.instance(this.version).tetryonRifle);
+      } else if (
         this.npcGenerationStep?.specialization ===
           Specialization.RomulanCenturion ||
         this.npcGenerationStep?.specialization ===
@@ -1609,6 +1650,9 @@ export class Character extends Construct implements IWeaponDiceProvider {
       result += 2;
     }
     if (this.hasTalent('Carnivorous Reptilian Physiology')) {
+      result += 2;
+    }
+    if (this.hasTalent('Tools of the Hunt (Hirogen Talent)')) {
       result += 2;
     }
     if (this.hasTalent(TALENT_NAME_NATURAL_PROTECTION_X)) {
@@ -2205,20 +2249,7 @@ export class Character extends Construct implements IWeaponDiceProvider {
       character.environmentStep.discipline = this.environmentStep.discipline;
       character.environmentStep.value = this.environmentStep.value;
     }
-    if (this.upbringingStep) {
-      character.upbringingStep = new UpbringingStep(
-        this.upbringingStep.upbringing,
-      );
-      character.upbringingStep.acceptedUpbringing =
-        this.upbringingStep.acceptedUpbringing;
-      character.upbringingStep.discipline = this.upbringingStep.discipline;
-      character.upbringingStep.focus = this.upbringingStep.focus;
-      character.upbringingStep.talentDeferred =
-        this.upbringingStep.talentDeferred;
-      if (this.upbringingStep.talent) {
-        character.upbringingStep.talent = this.upbringingStep.talent.copy();
-      }
-    }
+    character.upbringingStep = this.upbringingStep?.copy();
     if (this.educationStep) {
       character.educationStep = new EducationStep(
         this.educationStep.track,
@@ -2258,7 +2289,7 @@ export class Character extends Construct implements IWeaponDiceProvider {
     character.era = this.era;
     character.pastime = this.pastime == null ? [] : [...this.pastime];
     character.description = this.description;
-    character.token = this.token?.copy();
+    character.image = this.image?.copy();
     return character;
   }
 

@@ -18,6 +18,41 @@ export const News: React.FC<INewsProperties> = ({ showModal, onClose }) => {
       onClose={() => onClose()}
       header="What's New?"
     >
+      <b>v1.261016</b>
+      <ul>
+        <li>Minor NPC tweaks.</li>
+      </ul>
+      <b>v1.261008</b>
+      <ul>
+        <li>
+          I've made some character image changes. There may be some
+          side-effects. Your adblocker may suddenly warn you when you click on
+          characters with character images because the character representation
+          is really big.
+        </li>
+      </ul>
+      <b>v1.261002</b>
+      <ul>
+        <li>Minor PDF changes.</li>
+      </ul>
+      <b>v1.260930</b>
+      <ul>
+        <li>
+          Major internal changes. Please keep an eye out for odd behaviour.
+        </li>
+      </ul>
+      <b>v1.260928</b>
+      <ul>
+        <li>Bug fixes.</li>
+      </ul>
+      <b>v1.260925</b>
+      <ul>
+        <li>
+          A contribution was provided for exporting to the MapTool Virtual Table
+          Top.
+        </li>
+        <li>Small bug fixes.</li>
+      </ul>
       <b>v1.260920</b>
       <ul>
         <li>
@@ -231,32 +266,6 @@ export const News: React.FC<INewsProperties> = ({ showModal, onClose }) => {
           species abilities that change things like Protection). I'll work on
           cleaning that up, soon.
         </li>
-      </ul>
-      <b>v1.260412</b>
-      <ul>
-        <li>More minor improvements and fixes.</li>
-      </ul>
-      <b>v1.260411</b>
-      <ul>
-        <li>Minor improvements and fixes.</li>
-      </ul>
-      <b>v1.260410</b>
-      <ul>
-        <li>Tweaks to the handling of custom spaceframes.</li>
-      </ul>
-      <b>v1.260331</b>
-      <ul>
-        <li>Additional minor improvements.</li>
-      </ul>
-      <b>v1.260327</b>
-      <ul>
-        <li>
-          Minor improvements. Prep for the new <cite>Species</cite> book.
-        </li>
-      </ul>
-      <b>v1.260320</b>
-      <ul>
-        <li>Additional bug fixes.</li>
       </ul>
 
       <div className="text-center">

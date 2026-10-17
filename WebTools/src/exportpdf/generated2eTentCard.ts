@@ -7,7 +7,7 @@ import { makeKey } from '../common/translationKey';
 import { Attribute, AttributesHelper } from '../helpers/attributes';
 import { Department, DepartmentsHelper } from '../helpers/department';
 import type { Character } from '../common/character';
-import { Division } from '../common/character';
+import { Division, ImageConfig, TokenConfig } from '../common/character';
 import type { Construct } from '../common/construct';
 import { Column } from './column';
 import { FontType } from './fontLibrary';
@@ -50,6 +50,8 @@ import {
   TALENT_NAME_COLLABORATION,
 } from '../helpers/talents';
 import { TokenHelper } from './tokenHelper';
+import { SubTitle } from './subTitle';
+import { PageArea } from './pageArea';
 
 export class BasicGeneratedTentCardCharacterSheet extends BaseNonForm2eSheet {
   firstBlock: Column = new Column(20.2, 255.2, 165.3, 158.9);
@@ -100,9 +102,22 @@ export class BasicGeneratedTentCardCharacterSheet extends BaseNonForm2eSheet {
   }
 
   async drawImage(pdf: PDFDocument, page: PDFPage, character: Character) {
-    if (character.token) {
-      const tokenBytes = await TokenHelper.renderToken(character.token);
+    if (character.image && character.image instanceof TokenConfig) {
+      const tokenBytes = await TokenHelper.renderToken(character.image);
       const image = await pdf.embedPng(tokenBytes);
+
+      const imageSize = 72 * 1.5;
+      page.moveTo(
+        page.getWidth() - 24,
+        page.getHeight() - page.getHeight() / 6 + imageSize / 2,
+      );
+      page.drawImage(image, {
+        width: imageSize,
+        height: imageSize,
+        rotate: degrees(180),
+      });
+    } else if (character.image && character.image instanceof ImageConfig) {
+      const image = await this.embedImage(pdf, character.image);
 
       const imageSize = 72 * 1.5;
       page.moveTo(
@@ -118,21 +133,21 @@ export class BasicGeneratedTentCardCharacterSheet extends BaseNonForm2eSheet {
   }
 
   writeStatBoxes(page: PDFPage, character: Character) {
-    this.writeSubTitle(
-      page,
+    SubTitle.create(
+      new PageArea(new Column(211.6, 220.4, 13, 241.2), page),
       i18next.t('Construct.other.attributes'),
-      new Column(211.6, 220.4, 13, 241.2),
+      this.headingFont,
     );
-    this.writeSubTitle(
-      page,
+    SubTitle.create(
+      new PageArea(new Column(211.6, 285.7, 13, 241.2), page),
       i18next.t('Construct.other.departments'),
-      new Column(211.6, 285.7, 13, 241.2),
+      this.headingFont,
     );
     if (character.isStressTrackPresent) {
-      this.writeSubTitle(
-        page,
+      SubTitle.create(
+        new PageArea(new Column(211.6, 351.0, 13, 241.2), page),
         i18next.t('Construct.other.stress'),
-        new Column(211.6, 351.0, 13, 241.2),
+        this.headingFont,
       );
       this.writeStressBoxes(
         page,

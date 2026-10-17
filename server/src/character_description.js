@@ -45,6 +45,10 @@ function describeSpecies(species) {
         return "The Borg are a pseudo-species of cybernetic humanoids, or cyborgs, from the Delta Quadrant known as drones, which formed the entire population of the Borg Collective. Their ultimate goal is the attainment of 'perfection' through the forcible assimilation of diverse sentient species, technologies, and knowledge. ";
     } else if (species === "Ktarian") {
         return "Ktarians have distinctive foreheads divided into two hemispheres, and distinctive yellow eyes with horizontally slit pupils. ";
+    } else if (species === "Hirogen") {
+        return "Hirogen adults are quite large, standing above the average height of most other known humanoid species. They also possess greater physical strength due to their advanced muscle and nervous system. Their sensory perception are acute. They are hairless, with scaly skin covering their faces and bodies. They show little empathy or compassion. ";
+    } else if (species === "Jem'Hadar") {
+        return "The Jem'Hadar are genetically designed soldiers for the Dominion; they are hairless, have grey, scaly reptile-like skin and bony protrusions on their jawlines and on the sides of their heads. ";
     } else {
         return "";
     }
@@ -183,6 +187,8 @@ function describeSpecialization(inputJson, pronoun) {
             prompt += pronounPhrase + " a civilian medical doctor working for the Federation.";
         } else if (inputJson.specialization === "Journalist") {
             prompt += pronounPhrase + " a journalist working for a Federation news outlet.";
+        } else if (inputJson.specialization === "IndependentArchaeologist") {
+            prompt += pronounPhrase + " an independent archaeologist who seeks out ancient antiquities. ";
         }
     } else if (inputJson.npcCharacterType === "RogueRuffianMercenary") {
 
@@ -217,6 +223,8 @@ function describeSpecialization(inputJson, pronoun) {
             prompt += pronounPhrase + " a senior military leader of the Breen military with the rank of Thot.";
         } else if (inputJson.specialization === "BreenWarrior" || inputJson.specialization === "BreenEliteGuard") {
             prompt += pronounPhrase + " a soldier in the Breen military with the rank of " + inputJson.rank + ".";
+        } else if (inputJson.specialization === "HirogenHunter") {
+            prompt += pronounPhrase + " a game hunter, committed to the pursuit of prey (sentient or otherwise). ";
         }
     } else if (inputJson.npcCharacterType === "Borg") {
         prompt += pronounPhrase + " a cybernetic drone member of the collective, and as such has no real personality or personal interests. "
@@ -229,6 +237,10 @@ function describeSpecialization(inputJson, pronoun) {
           prompt += pronounPhrase + " specialized in medical activities, keeping the organic and cybernetic parts of drones operational. ";
         } else if (inputJson.specialization === "BorgAdjunctDrone") {
           prompt += pronounPhrase + " specialized in group leadership/planning and organization. ";
+        }
+    } else if (inputJson.npcCharacterType === "Dominion") {
+        if (inputJson.specialization === "JemHadarGuard") {
+          prompt += pronounPhrase + " is a guard for important leaders in the Dominion. ";
         }
     }
 
