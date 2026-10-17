@@ -49,6 +49,8 @@ function describeSpecies(species) {
         return "Hirogen adults are quite large, standing above the average height of most other known humanoid species. They also possess greater physical strength due to their advanced muscle and nervous system. Their sensory perception are acute. They are hairless, with scaly skin covering their faces and bodies. They show little empathy or compassion. ";
     } else if (species === "Jem'Hadar") {
         return "The Jem'Hadar are genetically designed soldiers for the Dominion; they are hairless, have grey, scaly reptile-like skin and bony protrusions on their jawlines and on the sides of their heads. ";
+    } else if (species === "Vorta") {
+        return "The Vorta have pale skin, violet eyes, and elongated ears that are completely joined to the rest of the head ";
     } else {
         return "";
     }
@@ -125,9 +127,13 @@ function describeSpecialization(inputJson, pronoun) {
         if (inputJson.specialization === "FerengiMerchant") {
             prompt += pronounPhrase + " Ferengi merchant seeking fortune through the sale of goods.";
         } else if (inputJson.specialization === "FerengiDaiMon") {
-            prompt += pronounPhrase + " an officer in the Ferengi mercantile fleet, with the rank of " + inputJson.rank + ".";
+            prompt += pronounPhrase + " a leader among Ferengi privateers, with the rank of " + inputJson.rank + ".";
+        } else if (inputJson.specialization === "FerengiPrivateer") {
+            prompt += pronounPhrase + " a Ferengi privateer, with the rank of " + inputJson.rank + ".";
         } else if (inputJson.specialization === "FerengiLiquidator") {
             prompt += pronounPhrase + " an trade official/liquidator in the Ferengi Commerce Authority.";
+        } else if (inputJson.specialization === "FerengiArmsMerchant") {
+            prompt += pronounPhrase + " a trader in weapons and military armaments. ";
         } else if (inputJson.specialization === "FerengiEliminator") {
             prompt += pronounPhrase + " an \"eliminator\" or mercenary free agent who is trained for dangerous clandestine missions.";
         } else if (inputJson.specialization === "FerengiBartender") {
@@ -241,6 +247,12 @@ function describeSpecialization(inputJson, pronoun) {
     } else if (inputJson.npcCharacterType === "Dominion") {
         if (inputJson.specialization === "JemHadarGuard") {
           prompt += pronounPhrase + " is a guard for important leaders in the Dominion. ";
+        } else if (inputJson.specialization === "JemHadarWarrior") {
+          prompt += pronounPhrase + " is a warrior/soldier for Dominion forces. ";
+        } else if (inputJson.specialization === "JemHadarFirst") {
+          prompt += pronounPhrase + " is a combat leader for Dominion forces. ";
+        } else if (inputJson.specialization === "VortaAdministrator") {
+          prompt += pronounPhrase + " is an administrative leader for the Dominion. ";
         }
     }
 

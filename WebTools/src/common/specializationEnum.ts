@@ -23,6 +23,8 @@ export enum Specialization {
   KlingonDiplomat,
 
   FerengiMerchant,
+  FerengiPrivateer,
+  FerengiArmsMerchant,
   FerengiDaiMon,
   FerengiLiquidator,
   FerengiEliminator,
@@ -77,6 +79,10 @@ export enum Specialization {
   BorgAdjunctDrone,
 
   JemHadarGuard,
+  JemHadarWarrior,
+  JemHadarFirst,
+  VortaAdministrator,
+  Founder,
 }
 
 export const allSpecializations = () => {

@@ -28,7 +28,7 @@ import {
 import { NameGenerator } from '../nameGenerator';
 import { NpcType, NpcTypes } from './npcType';
 import type { SpecializationModel } from './specializations';
-import { Specializations, Specialty, Value } from './specializations';
+import { Specializations, Specialty } from './specializations';
 import { NpcCharacterType } from './npcCharacterType';
 import { hasAnySource, hasSource } from '../../state/contextFunctions';
 import { Source } from '../../helpers/sources';
@@ -48,6 +48,7 @@ import { SpecialWeapon } from '../../common/specialWeapon';
 import { TalentCategory } from '../../helpers/talentCategory';
 import { borgSpeciesDesignations } from './borgSpeciesDesignations';
 import { type TalentModel } from '../../helpers/talentModel';
+import { Value } from '../../common/value';
 
 const recreationSkills: { [type: number]: string[] } = {
   [NpcCharacterType.Starfleet]: [
@@ -637,6 +638,7 @@ const speciesSpecificValues: { [species: number]: (string | Value)[] } = {
     'Give me all your technology, or I will take it from you!',
     'The Pakleds are a force! One that you reckon with!',
   ],
+  [Species.Vorta]: [new Value('The founders are our gods', 'reverent')],
 };
 
 const personality = [
@@ -773,10 +775,13 @@ export class NpcGenerator {
         gender,
       );
       character.name = name;
-      character.pronouns =
-        specialization.id === Specialization.JemHadarGuard
-          ? 'He/Him'
-          : pronouns;
+      character.pronouns = [
+        Specialization.JemHadarGuard,
+        Specialization.JemHadarWarrior,
+        Specialization.JemHadarFirst,
+      ].includes(specialization.id)
+        ? 'He/Him'
+        : pronouns;
       origin = nameOrigin;
     }
 
@@ -854,7 +859,7 @@ export class NpcGenerator {
     if (
       !character.isCivilian() &&
       characterType !== NpcCharacterType.Borg &&
-      characterType !== NpcCharacterType.Dominion
+      specialization.id !== Specialization.VortaAdministrator
     ) {
       NpcGenerator.assignRank(character, specialization);
     }
@@ -1116,7 +1121,12 @@ export class NpcGenerator {
         }
         break;
       case NpcCharacterType.Ferengi:
-        if (specialization.id === Specialization.FerengiDaiMon) {
+        if (
+          [
+            Specialization.FerengiDaiMon,
+            Specialization.FerengiPrivateer,
+          ].includes(specialization.id)
+        ) {
           character.type = CharacterType.AlliedMilitary;
           character.typeDetails = new AlliedMilitaryDetails(
             AllyHelper.instance.findOption(AlliedMilitaryType.Other),
@@ -1323,6 +1333,9 @@ export class NpcGenerator {
           TalentsHelper.getTalent('The Shroud (Special Rule)'),
         );
       }
+      if (!character.hasTalent('Brute Force')) {
+        character.addTalent(TalentsHelper.getTalent('Brute Force'));
+      }
     }
   }
 
@@ -1511,6 +1524,25 @@ export class NpcGenerator {
       );
     } else if (specialization.id === Specialization.FerengiDaiMon) {
       ranks = [RanksHelper.instance().getRank(Rank.DaiMon)];
+    } else if (specialization.id === Specialization.FerengiPrivateer) {
+      ranks = [
+        RanksHelper.instance().getRank(Rank.Salesman),
+        RanksHelper.instance().getRank(Rank.Associate),
+        RanksHelper.instance().getRank(Rank.Menial),
+      ];
+    } else if (
+      [Specialization.JemHadarWarrior, Specialization.JemHadarGuard].includes(
+        specialization.id,
+      )
+    ) {
+      ranks = [
+        RanksHelper.instance().getRank(Rank.Second),
+        RanksHelper.instance().getRank(Rank.Third),
+        RanksHelper.instance().getRank(Rank.Fourth),
+        RanksHelper.instance().getRank(Rank.Fifth),
+      ];
+    } else if ([Specialization.JemHadarFirst].includes(specialization.id)) {
+      ranks = [RanksHelper.instance().getRank(Rank.First)];
     } else if (specialization.id === Specialization.KlingonShipCaptain) {
       ranks = [RanksHelper.instance().getRank(Rank.Captain)];
     } else if (specialization.id === Specialization.CardassianGul) {

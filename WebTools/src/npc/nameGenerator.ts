@@ -3,6 +3,7 @@ import type { ISpecies } from '../helpers/species';
 import { Species } from '../helpers/speciesEnum';
 import bynarNames from './names-bynar.json';
 import cardassianNames from './names-cardassian.json';
+import denobulanNames from './names-denobulan.json';
 import humanNames from './names-human.json';
 import ferengiNames from './names-ferengi.json';
 import hupyrianNames from './names-hupyrian.json';
@@ -18,6 +19,7 @@ import talarianNames from './names-talarian.json';
 import tellariteNames from './names-tellarite.json';
 import tholianNames from './names-tholian.json';
 import tzenkethiNames from './names-tzenkethi.json';
+import vortaNames from './names-vorta.json';
 import vulcanNames from './names-vulcan.json';
 import yridianNames from './names-yridian.json';
 
@@ -37,6 +39,7 @@ interface NameList {
 const names: NameList[] = [
   { species: 'Bynar', names: bynarNames },
   { species: 'Cardassian', names: cardassianNames },
+  { species: 'Denobulan', names: denobulanNames },
   { species: 'Human', names: humanNames },
   { species: 'Ferengi', names: ferengiNames },
   { species: 'Hupyrian', names: hupyrianNames },
@@ -52,6 +55,7 @@ const names: NameList[] = [
   { species: 'Tellarite', names: tellariteNames },
   { species: 'Tholian', names: tholianNames },
   { species: 'Tzenkethi', names: tzenkethiNames },
+  { species: 'Vorta', names: vortaNames },
   { species: 'Vulcan', names: vulcanNames },
   { species: 'Yridian', names: yridianNames },
 ];
