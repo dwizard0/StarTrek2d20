@@ -15,7 +15,7 @@ import {
   supportsDeferredTalents,
   requiresLifepathTalent,
   getLifepathTalentStep,
-  isTalentDeferred,
+  canDeferTalent,
   lifepathTalentContexts,
   lifepathTalentLabel,
 } from './lifepathTalentState';
@@ -32,7 +32,10 @@ export function getLifepathTalentChoices(
   const candidate = character.copy();
   getLifepathTalentStep(candidate, context).talent = undefined;
   // Cadets use the novice page without a career-length choice.
-  if (context === StepContext.Career && candidate.type === CharacterType.Cadet) {
+  if (
+    context === StepContext.Career &&
+    candidate.type === CharacterType.Cadet
+  ) {
     candidate.careerStep.career = Career.Young;
   }
   let restricted: TalentModel[] | undefined;
@@ -71,7 +74,8 @@ export function getLifepathTalentChoices(
         (context === StepContext.Species &&
           candidate.speciesStep.ability?.talentNames.includes(t.name)) ||
         (context === StepContext.Career &&
-          candidate.type === CharacterType.Child && t.name === 'Childhood Insight');
+          candidate.type === CharacterType.Child &&
+          t.name === 'Childhood Insight');
       return granted || t.isPrerequisiteFulfilled(candidate);
     })
     .filter(
@@ -99,14 +103,8 @@ export function lifepathTalentError(
   )
     return undefined;
   const step = getLifepathTalentStep(character, context);
-  if (isTalentDeferred(character, context) && !final && !step.talent)
-    return undefined;
-  if (step.talentDeferred)
-    return 'Choose the deferred talent before finishing.';
-  if (!step.talent)
-    return final
-      ? 'Select a talent before finishing.'
-      : 'Select a talent or explicitly choose it later.';
+  if (!final && canDeferTalent(character, context)) return undefined;
+  if (!step.talent) return 'Select a talent before finishing.';
   if (
     !getLifepathTalentChoices(character, context).some(
       (t) => t.name === step.talent.talent,

@@ -1,4 +1,3 @@
-import { DeferredTalentResolver } from '../components/deferredTalentSelection';
 import { finalLifepathTalentErrors } from '../helpers/lifepathTalents';
 import { Dialog } from '../components/dialog';
 import React, { useEffect, useState } from 'react';
@@ -578,7 +577,6 @@ const FinishPageBase: React.FC<IFinishPageProperties> = ({ character }) => {
           )}
         </div>
 
-        <DeferredTalentResolver character={character} />
         <div className="button-container mb-5">
           <LoadingButton
             loading={loadingExport}

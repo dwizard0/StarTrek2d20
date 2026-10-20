@@ -69,6 +69,7 @@ interface ISingleTalentSelectionProperties {
 }
 
 interface ITalentSelectionRowProperties {
+  detailsOnly?: boolean;
   talent: RankedTalent;
   construct: Construct;
   selection: SelectedTalent;
@@ -195,6 +196,7 @@ export const DepartmentSelectedTalentChoice: React.FC<
 };
 
 export const TalentSelectionRow: React.FC<ITalentSelectionRowProperties> = ({
+  detailsOnly = false,
   talent,
   construct,
   selection,
@@ -785,22 +787,24 @@ export const TalentSelectionRow: React.FC<ITalentSelectionRowProperties> = ({
 
   return (
     <tbody>
-      <tr>
-        <td className="selection-header-small">{name}</td>
-        <td>
-          {talentDescription(talent)} {prerequisites}
-        </td>
-        <td>
-          <CheckBox
-            text=""
-            value={talent.name}
-            isChecked={selection?.talent === talent.name}
-            onChanged={() => {
-              selectTalent(talent);
-            }}
-          />
-        </td>
-      </tr>
+      {!detailsOnly && (
+        <tr>
+          <td className="selection-header-small">{name}</td>
+          <td>
+            {talentDescription(talent)} {prerequisites}
+          </td>
+          <td>
+            <CheckBox
+              text=""
+              value={talent.name}
+              isChecked={selection?.talent === talent.name}
+              onChanged={() => {
+                selectTalent(talent);
+              }}
+            />
+          </td>
+        </tr>
+      )}
       {selection?.talent === talent.name &&
       talent.name === TALENT_NAME_WARRIORS_SPIRIT ? (
         <tr>

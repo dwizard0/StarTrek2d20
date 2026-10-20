@@ -6391,5 +6391,12 @@
     "World.atmosphericDensity.veryDense": "Very dense",
 
     "World.class.description": "Class {{class}}",
-    "World.class.fullDescription": "Class {{class}} ({{definition}})"
+    "World.class.fullDescription": "Class {{class}} ({{definition}})",
+  "LifepathTalentReview.title": "Review talents",
+  "LifepathTalentReview.optional": "You can select this talent now or leave it for the talent review near the end of character creation.",
+  "LifepathTalentReview.instruction": "Review or change your talents below, grouped by where you gained them. Complete any remaining choices before finishing.",
+  "LifepathTalentReview.unselected": "No talent selected.",
+  "LifepathTalentReview.remaining_one": "{{count}} talent choice needs attention before finishing.",
+  "LifepathTalentReview.remaining_other": "{{count}} talent choices need attention before finishing.",
+  "LifepathTalentReview.complete": "All talent choices are complete."
 }

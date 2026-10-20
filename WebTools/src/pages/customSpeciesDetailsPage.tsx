@@ -1,8 +1,7 @@
-import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import { recordLifepathTalentProgress } from '../state/characterActions';
+import { OptionalTalentNote } from '../components/deferredTalentSelection';
 import {
   supportsDeferredTalents,
-  isTalentDeferred,
-  lifepathTalentError,
   getLifepathTalentChoices,
 } from '../helpers/lifepathTalents';
 import React from 'react';
@@ -98,22 +97,20 @@ const CustomSpeciesDetailsPageBase: React.FC<
           <Header level={2}>{t('Construct.other.talents')}</Header>
           <div>{renderCrossSpeciesCheckbox()}</div>
           {esotericTalentOption}
-          <ChooseTalentLater
+          <OptionalTalentNote
             character={character}
             context={StepContext.Species}
           />
-          {!isTalentDeferred(character, StepContext.Species) && (
-            <SingleTalentSelectionList
-              talents={
-                supportsDeferredTalents(character)
-                  ? getLifepathTalentChoices(character, StepContext.Species)
-                  : talents
-              }
-              construct={character}
-              initialSelection={character.speciesStep?.talent}
-              onSelection={(talent) => onTalentSelected(talent)}
-            />
-          )}
+          <SingleTalentSelectionList
+            talents={
+              supportsDeferredTalents(character)
+                ? getLifepathTalentChoices(character, StepContext.Species)
+                : talents
+            }
+            construct={character}
+            initialSelection={character.speciesStep?.talent}
+            onSelection={(talent) => onTalentSelected(talent)}
+          />
         </div>
       ) : (
         <div>
@@ -154,11 +151,6 @@ const CustomSpeciesDetailsPageBase: React.FC<
   };
 
   const onNext = () => {
-    const error = lifepathTalentError(character, StepContext.Species);
-    if (error) {
-      Dialog.show(error);
-      return;
-    }
     if (!character.speciesStep.customSpeciesName) {
       Dialog.show(t('CustomSpeciesDetails.speciesNameWarning'));
       return;
@@ -172,7 +164,7 @@ const CustomSpeciesDetailsPageBase: React.FC<
     if (
       isTalentSelectionRequired() &&
       character.speciesStep?.talent == null &&
-      !isTalentDeferred(character, StepContext.Species)
+      !supportsDeferredTalents(character)
     ) {
       Dialog.show('You have not selected a talent.');
       return;
@@ -181,6 +173,7 @@ const CustomSpeciesDetailsPageBase: React.FC<
     if (character.stereotype === Stereotype.Npc) {
       navigate('/npc/stats');
     } else {
+      store.dispatch(recordLifepathTalentProgress(StepContext.Species));
       Navigation.navigateToPage(PageIdentity.Environment);
     }
   };

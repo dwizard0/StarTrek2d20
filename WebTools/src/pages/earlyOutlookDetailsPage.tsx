@@ -1,8 +1,7 @@
-import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import { recordLifepathTalentProgress } from '../state/characterActions';
+import { OptionalTalentNote } from '../components/deferredTalentSelection';
 import {
   supportsDeferredTalents,
-  isTalentDeferred,
-  lifepathTalentError,
   getLifepathTalentChoices,
 } from '../helpers/lifepathTalents';
 import React, { useState } from 'react';
@@ -65,32 +64,26 @@ const EarlyOutlookDetailsPageBase: React.FC<ICharacterProperties> = ({
   };
 
   const navigateToNextPage = () => {
-    const talentError = lifepathTalentError(
-      character,
-      StepContext.EarlyOutlook,
-    );
-    if (talentError) {
-      Dialog.show(talentError);
-      return;
-    }
     if (character.upbringingStep?.discipline == null) {
       Dialog.show(t('UpbringingDetailPage.error.discipline'));
     } else if (!character.upbringingStep?.focus) {
       Dialog.show(t('UpbringingDetailPage.error.focus'));
     } else if (
       character.upbringingStep?.talent == null &&
-      !isTalentDeferred(character, StepContext.EarlyOutlook)
+      !supportsDeferredTalents(character)
     ) {
       Dialog.show(t('UpbringingDetailPage.error.talent'));
     } else {
       const error = determineSelectedTalentExtraErrors(
         character.upbringingStep?.talent,
       );
-      if (error?.length) {
+      if (!supportsDeferredTalents(character) && error?.length) {
         Dialog.show(error);
       } else if (character.type === CharacterType.Child) {
+        store.dispatch(recordLifepathTalentProgress(StepContext.EarlyOutlook));
         Navigation.navigateToPage(PageIdentity.ChildEducationPage);
       } else {
+        store.dispatch(recordLifepathTalentProgress(StepContext.EarlyOutlook));
         Navigation.navigateToPage(PageIdentity.Career);
       }
     }
@@ -211,20 +204,18 @@ const EarlyOutlookDetailsPageBase: React.FC<ICharacterProperties> = ({
       <div>
         <Header level={2}>{t('Construct.other.talent')}</Header>
         {character.version > 1 ? <TalentSettingsView /> : undefined}
-        <ChooseTalentLater
+        <OptionalTalentNote
           character={character}
           context={StepContext.EarlyOutlook}
         />
-        {!isTalentDeferred(character, StepContext.EarlyOutlook) && (
-          <SingleTalentSelectionList
-            talents={talents}
-            initialSelection={character.upbringingStep?.talent}
-            onSelection={(talent) => {
-              onTalentSelected(talent);
-            }}
-            construct={character}
-          />
-        )}
+        <SingleTalentSelectionList
+          talents={talents}
+          initialSelection={character.upbringingStep?.talent}
+          onSelection={(talent) => {
+            onTalentSelected(talent);
+          }}
+          construct={character}
+        />
       </div>
       <div className="row">
         {showAdvanced ? (

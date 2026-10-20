@@ -1,8 +1,7 @@
-import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import { recordLifepathTalentProgress } from '../state/characterActions';
+import { OptionalTalentNote } from '../components/deferredTalentSelection';
 import {
   supportsDeferredTalents,
-  isTalentDeferred,
-  lifepathTalentError,
   getLifepathTalentChoices,
 } from '../helpers/lifepathTalents';
 import React from 'react';
@@ -317,24 +316,22 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
     return (
       <div>
         <Header level={2}>{t('Construct.other.talent')}</Header>
-        <ChooseTalentLater
+        <OptionalTalentNote
           character={character}
           context={StepContext.Education}
         />
-        {!isTalentDeferred(character, StepContext.Education) && (
-          <SingleTalentSelectionList
-            talents={
-              supportsDeferredTalents(character)
-                ? getLifepathTalentChoices(character, StepContext.Education)
-                : filterTalentList()
-            }
-            initialSelection={character.educationStep?.talent}
-            construct={character}
-            onSelection={(talent) => {
-              onTalentSelected(talent);
-            }}
-          />
-        )}
+        <SingleTalentSelectionList
+          talents={
+            supportsDeferredTalents(character)
+              ? getLifepathTalentChoices(character, StepContext.Education)
+              : filterTalentList()
+          }
+          initialSelection={character.educationStep?.talent}
+          construct={character}
+          onSelection={(talent) => {
+            onTalentSelected(talent);
+          }}
+        />
       </div>
     );
   };
@@ -365,11 +362,6 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
   };
 
   const navigateToNextPage = () => {
-    const talentError = lifepathTalentError(character, StepContext.Education);
-    if (talentError) {
-      Dialog.show(talentError);
-      return;
-    }
     if (character.educationStep?.attributes?.length < 3) {
       Dialog.show(t('SoloEducationDetailsPage.errorAttributes'));
     } else if (character.isEducationDisciplinesIncomplete) {
@@ -380,19 +372,25 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
       Dialog.show(t('SoloEducationDetailsPage.errorFocuses'));
     } else if (!character.educationStep?.value) {
       Dialog.show(t('Common.error.value'));
-    } else if (!character.educationStep?.talent == null) {
+    } else if (
+      !supportsDeferredTalents(character) &&
+      !character.educationStep?.talent == null
+    ) {
       Dialog.show(t('SoloEducationDetailsPage.errorTalent'));
     } else {
       const error = determineSelectedTalentExtraErrors(
         character.educationStep?.talent,
       );
-      if (error?.length) {
+      if (!supportsDeferredTalents(character) && error?.length) {
         Dialog.show(error);
       } else if (character.age.isChild) {
+        store.dispatch(recordLifepathTalentProgress(StepContext.Education));
         Navigation.navigateToPage(PageIdentity.ChildCareer);
       } else if (character.type === CharacterType.Cadet) {
+        store.dispatch(recordLifepathTalentProgress(StepContext.Education));
         Navigation.navigateToPage(PageIdentity.NoviceOrCadetExperience);
       } else {
+        store.dispatch(recordLifepathTalentProgress(StepContext.Education));
         Navigation.navigateToPage(PageIdentity.CareerLength);
       }
     }

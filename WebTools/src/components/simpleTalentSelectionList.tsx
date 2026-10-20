@@ -9,6 +9,7 @@ import type { ITalent } from '../helpers/italent';
 
 interface ISimpleTalentSelectionProperties {
   talents: TalentModel[];
+  allowDeselect?: boolean;
   construct: Construct;
   initialSelection?: string;
   onSelection: (talent?: SelectedTalent) => void;
@@ -16,7 +17,13 @@ interface ISimpleTalentSelectionProperties {
 
 export const SimpleTalentSelectionList: React.FC<
   ISimpleTalentSelectionProperties
-> = ({ talents, construct, onSelection, initialSelection }) => {
+> = ({
+  talents,
+  construct,
+  onSelection,
+  initialSelection,
+  allowDeselect = true,
+}) => {
   const [selection, setSelection] = useState<string | undefined>(
     initialSelection,
   );
@@ -43,7 +50,7 @@ export const SimpleTalentSelectionList: React.FC<
   });
 
   const selectTalent = (talent: ITalent) => {
-    if (selection === talent.name) {
+    if (selection === talent.name && allowDeselect) {
       setSelection(undefined);
       onSelection(undefined);
     } else {

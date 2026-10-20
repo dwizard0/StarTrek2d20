@@ -1,8 +1,7 @@
-import { DeferredTalentResolver } from '../components/deferredTalentSelection';
+import { LifepathTalentReview } from '../components/deferredTalentSelection';
 import {
   supportsDeferredTalents,
   finalLifepathTalentErrors,
-  getLifepathTalentChoices,
 } from '../helpers/lifepathTalents';
 import React, { useEffect } from 'react';
 import { Character } from '../common/character';
@@ -137,12 +136,11 @@ const AttributesAndDisciplinesPageBase: React.FC<ICharacterProperties> = ({
     disciplineCount,
   );
 
-  const talents = supportsDeferredTalents(character)
-    ? getLifepathTalentChoices(character, StepContext.FinishingTouches)
-    : filterTalentList();
+  const talents = supportsDeferredTalents(character) ? [] : filterTalentList();
 
   const talentSelection =
-    isKlingonWarriorType(character.type) || character.version > 1 ? (
+    !supportsDeferredTalents(character) &&
+    (isKlingonWarriorType(character.type) || character.version > 1) ? (
       <div className="my-4">
         <Header level={2}>{t('Construct.other.talents')}</Header>
         <SingleTalentSelectionList
@@ -233,7 +231,7 @@ const AttributesAndDisciplinesPageBase: React.FC<ICharacterProperties> = ({
         {value}
       </div>
 
-      <DeferredTalentResolver character={character} />
+      <LifepathTalentReview character={character} />
       {talentSelection}
 
       <div className="mt-4 d-flex justify-content-end">

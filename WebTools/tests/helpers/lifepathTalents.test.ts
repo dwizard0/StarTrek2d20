@@ -33,6 +33,8 @@ import { characterReducer } from '../../src/state/characterReducer';
 import {
   addCharacterTalent,
   deferCharacterTalent,
+  recordLifepathTalentProgress,
+  updateCharacterGeneralEditTalentChange,
   setCharacterName,
   setCharacterSpecies,
   setCharacterEducation,
@@ -103,28 +105,49 @@ beforeEach(() => {
 test('all deferred origins survive a single compressed save, including a real species ability', () => {
   const c = character();
   c.speciesStep = new SpeciesStep(Species.Betazoid);
-  c.speciesStep.ability = SpeciesAbilityList.instance.getBySpecies(Species.Betazoid);
-  const contexts = [StepContext.Species, StepContext.EarlyOutlook, StepContext.Education, StepContext.Career];
-  const deferred = contexts.reduce((current, context) => reduce(current, deferCharacterTalent(context)), c);
-  const restored = marshaller.decodeCharacter(marshaller.decode(marshaller.encodeMainCharacter(deferred)));
-  contexts.forEach(context => expect(isTalentDeferred(restored, context)).toBe(true));
-  expect(names(restored, StepContext.Species).sort()).toEqual(['Empathy2e', 'Telepathy2e']);
+  c.speciesStep.ability = SpeciesAbilityList.instance.getBySpecies(
+    Species.Betazoid,
+  );
+  const contexts = [
+    StepContext.Species,
+    StepContext.EarlyOutlook,
+    StepContext.Education,
+    StepContext.Career,
+  ];
+  const deferred = contexts.reduce(
+    (current, context) => reduce(current, deferCharacterTalent(context)),
+    c,
+  );
+  const restored = marshaller.decodeCharacter(
+    marshaller.decode(marshaller.encodeMainCharacter(deferred)),
+  );
+  contexts.forEach((context) =>
+    expect(isTalentDeferred(restored, context)).toBe(true),
+  );
+  expect(names(restored, StepContext.Species).sort()).toEqual([
+    'Empathy2e',
+    'Telepathy2e',
+  ]);
 });
 
 test('cadets retain their mandatory novice talent even without a career-length choice', () => {
-  const c = character(); c.type = CharacterType.Cadet; c.careerStep = new CareerStep();
+  const c = character();
+  c.type = CharacterType.Cadet;
+  c.careerStep = new CareerStep();
   expect(names(c, StepContext.Career)).toEqual(['Untapped Potential']);
 });
 
 test('child education has no extra talent slot and child career retains its fixed talent', () => {
-  const c = character(); c.type = CharacterType.Child;
+  const c = character();
+  c.type = CharacterType.Child;
   store.dispatch(setSources([Source.Core2ndEdition, Source.PlayersGuide]));
   expect(canDeferTalent(c, StepContext.Education)).toBe(false);
   expect(names(c, StepContext.Career)).toEqual(['Childhood Insight']);
 });
 
 test('malformed saved deferrals cannot add a finishing slot or override a selected talent', () => {
-  const c = character(); c.educationStep.talent = new SelectedTalent('Tough');
+  const c = character();
+  c.educationStep.talent = new SelectedTalent('Tough');
   const json = marshaller.decode(marshaller.encodeMainCharacter(c));
   json.deferredTalents = ['Education', 'FinishingTouches', 'NotAStage'];
   const restored = marshaller.decodeCharacter(json);
@@ -133,14 +156,14 @@ test('malformed saved deferrals cannot add a finishing slot or override a select
   expect(canDeferTalent(restored, StepContext.FinishingTouches)).toBe(false);
 });
 
-test('a blank slot is not implicit deferral, and final validation still requires a deferred choice', () => {
+test('a blank slot can be skipped, but final validation still requires a choice', () => {
   const c = character();
-  expect(lifepathTalentError(c, StepContext.Education)).toBeTruthy();
+  expect(lifepathTalentError(c, StepContext.Education)).toBeUndefined();
   const next = reduce(c, deferCharacterTalent(StepContext.Education));
   expect(isTalentDeferred(next, StepContext.Education)).toBe(true);
   expect(lifepathTalentError(next, StepContext.Education)).toBeUndefined();
   expect(lifepathTalentError(next, StepContext.Education, true)).toMatch(
-    /deferred/,
+    /before finishing/,
   );
   expect(c.educationStep.talentDeferred).toBe(false);
 });
@@ -164,7 +187,8 @@ test.each([
     expect(isTalentDeferred(next, context)).toBe(false);
     expect(getLifepathTalentStep(next, context).talent).not.toBe(talent);
     next = reduce(next, addCharacterTalent(undefined, context));
-    expect(lifepathTalentError(next, context)).toBeTruthy();
+    expect(lifepathTalentError(next, context)).toBeUndefined();
+    expect(lifepathTalentError(next, context, true)).toBeTruthy();
   },
 );
 
@@ -378,7 +402,87 @@ test('upbringing copy preserves deferred state and upstream notes through Redux 
   const updated = reduce(c.copy(), setCharacterName('Compatibility test'));
   expect(updated.upbringingStep.talentDeferred).toBe(true);
   expect(updated.upbringingStep.notes).toBe(c.upbringingStep.notes);
-  const restored = marshaller.decodeCharacter(marshaller.decode(marshaller.encodeMainCharacter(updated)));
+  const restored = marshaller.decodeCharacter(
+    marshaller.decode(marshaller.encodeMainCharacter(updated)),
+  );
   expect(restored.upbringingStep.talentDeferred).toBe(true);
   expect(restored.upbringingStep.notes).toBe(c.upbringingStep.notes);
+});
+
+test.each([
+  StepContext.Species,
+  StepContext.EarlyOutlook,
+  StepContext.Education,
+  StepContext.Career,
+])(
+  'advancing records an unselected choice at origin %s without changing other choices',
+  (context) => {
+    const c = character();
+    c.speciesStep = new SpeciesStep(Species.Betazoid);
+    c.speciesStep.ability = SpeciesAbilityList.instance.getBySpecies(
+      Species.Betazoid,
+    );
+    const next = reduce(c, recordLifepathTalentProgress(context));
+    expect(getLifepathTalentStep(next, context).talentDeferred).toBe(true);
+    expect(getLifepathTalentStep(c, context).talentDeferred).toBe(false);
+    expect(lifepathTalentError(next, context)).toBeUndefined();
+    expect(lifepathTalentError(next, context, true)).toBeTruthy();
+    const restored = marshaller.decodeCharacter(
+      marshaller.decode(marshaller.encodeMainCharacter(next)),
+    );
+    expect(getLifepathTalentStep(restored, context).talentDeferred).toBe(true);
+  },
+);
+
+test('advancing keeps incomplete extra selections for final review', () => {
+  let c = character();
+  c.educationStep.talent = new SelectedTalent('Bold');
+  c = reduce(c, recordLifepathTalentProgress(StepContext.Education));
+  expect(c.educationStep.talent.talent).toBe('Bold');
+  expect(c.educationStep.talentDeferred).toBe(false);
+  expect(lifepathTalentError(c, StepContext.Education)).toBeUndefined();
+  expect(lifepathTalentError(c, StepContext.Education, true)).toBeTruthy();
+  const t = c.educationStep.talent.copy();
+  t.department = Department.Command;
+  c = reduce(c, addCharacterTalent(t, StepContext.Education));
+  expect(lifepathTalentError(c, StepContext.Education, true)).toBeUndefined();
+});
+
+test('career review can change Untapped Potential attribute without the reducer overwriting it', () => {
+  const c = character();
+  c.careerStep = new CareerStep(Career.Young);
+  c.careerStep.talent = new SelectedTalent('Untapped Potential');
+  c.careerStep.talent.attribute = Attribute.Control;
+  const updated = c.careerStep.talent.copy();
+  updated.attribute = Attribute.Insight;
+  const next = reduce(c, addCharacterTalent(updated, StepContext.Career));
+  expect(next.careerStep.talent.attribute).toBe(Attribute.Insight);
+  expect(c.careerStep.talent.attribute).toBe(Attribute.Control);
+});
+
+test.each(['1e', 'solo'])(
+  'recording skipped choices does not change %s characters',
+  (mode) => {
+    const c = character();
+    if (mode === '1e') c.version = 1;
+    else c.stereotype = Stereotype.SoloCharacter;
+    const next = reduce(c, recordLifepathTalentProgress(StepContext.Education));
+    expect(next.educationStep.talentDeferred).toBe(false);
+  },
+);
+
+test('General Edit updates the upbringing talent without overwriting its focus', () => {
+  const c = character();
+  c.upbringingStep.focus = 'Computers';
+  c.upbringingStep.talent = new SelectedTalent('Tough');
+  const origin = c.talentAssemblies.find(
+    (t) => t.context === AssemblyContext.EarlyOutlook,
+  );
+  const next = reduce(
+    c,
+    updateCharacterGeneralEditTalentChange(origin, new SelectedTalent('Bold')),
+  );
+  expect(next.upbringingStep.talent.talent).toBe('Bold');
+  expect(next.upbringingStep.focus).toBe('Computers');
+  expect(c.upbringingStep.talent.talent).toBe('Tough');
 });

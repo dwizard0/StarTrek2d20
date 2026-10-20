@@ -1,8 +1,7 @@
-import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import { recordLifepathTalentProgress } from '../state/characterActions';
+import { OptionalTalentNote } from '../components/deferredTalentSelection';
 import {
   supportsDeferredTalents,
-  isTalentDeferred,
-  lifepathTalentError,
   getLifepathTalentChoices,
 } from '../helpers/lifepathTalents';
 import React, { useEffect, useState } from 'react';
@@ -149,24 +148,22 @@ const CareerLengthDetailsPageBase: React.FC<ICharacterProperties> = ({
 
           <div className="my-3">
             <Header level={2}>{t('Construct.other.talent')}</Header>
-            <ChooseTalentLater
+            <OptionalTalentNote
               character={character}
               context={StepContext.Career}
             />
-            {!isTalentDeferred(character, StepContext.Career) && (
-              <SingleTalentSelectionList
-                talents={
-                  supportsDeferredTalents(character)
-                    ? getLifepathTalentChoices(character, StepContext.Career)
-                    : filterTalentList()
-                }
-                initialSelection={character.careerStep?.talent}
-                construct={character}
-                onSelection={(talent) => {
-                  onTalentSelected(talent);
-                }}
-              />
-            )}
+            <SingleTalentSelectionList
+              talents={
+                supportsDeferredTalents(character)
+                  ? getLifepathTalentChoices(character, StepContext.Career)
+                  : filterTalentList()
+              }
+              initialSelection={character.careerStep?.talent}
+              construct={character}
+              onSelection={(talent) => {
+                onTalentSelected(talent);
+              }}
+            />
           </div>
         </>
       );
@@ -210,25 +207,22 @@ const CareerLengthDetailsPageBase: React.FC<ICharacterProperties> = ({
   };
 
   const onNext = () => {
-    const talentError = lifepathTalentError(character, StepContext.Career);
-    if (talentError) {
-      Dialog.show(talentError);
-      return;
-    }
     if (
       !(supportsDeferredTalents(character)
         ? character.careerStep?.talent
         : talentName) &&
-      !isTalentDeferred(character, StepContext.Career)
+      !supportsDeferredTalents(character)
     ) {
       Dialog.show('You must select a Talent before proceeding.');
     } else if (
+      !supportsDeferredTalents(character) &&
       determineSelectedTalentExtraErrors(character.careerStep?.talent) != null
     ) {
       Dialog.show(
         determineSelectedTalentExtraErrors(character.careerStep?.talent),
       );
     } else {
+      store.dispatch(recordLifepathTalentProgress(StepContext.Career));
       Navigation.navigateToPage(PageIdentity.CareerEvent1);
     }
   };

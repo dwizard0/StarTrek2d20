@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
-import { ChooseTalentLater } from '../components/deferredTalentSelection';
-import {
-  isTalentDeferred,
-  supportsDeferredTalents,
-} from '../helpers/lifepathTalentState';
+import { OptionalTalentNote } from '../components/deferredTalentSelection';
+import { supportsDeferredTalents } from '../helpers/lifepathTalentState';
 import { Navigation } from '../common/navigator';
 import Button from 'react-bootstrap/Button';
 import { TalentDescription } from '../components/talentDescription';
@@ -24,6 +21,7 @@ import { store } from '../state/store';
 import {
   StepContext,
   addCharacterTalent,
+  recordLifepathTalentProgress,
   addCharacterUntappedPotentialAttribute,
   setCharacterValue,
 } from '../state/characterActions';
@@ -40,18 +38,19 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
 }) => {
   const { t } = useTranslation();
   const talentModel = TalentsHelper.getTalent(TALENT_NAME_UNTAPPED_POTENTIAL);
-  const deferred = isTalentDeferred(character, StepContext.Career);
 
   const onNext = () => {
     if (
       character.version > 1 &&
-      !isTalentDeferred(character, StepContext.Career) &&
+      !supportsDeferredTalents(character) &&
       character.careerStep?.talent?.attribute == null
     ) {
       Dialog.show(t('NoviceOrCadetExperiencePage.attribute.error'));
     } else if (character.type === CharacterType.Cadet) {
+      store.dispatch(recordLifepathTalentProgress(StepContext.Career));
       Navigation.navigateToPage(PageIdentity.CadetSeniority);
     } else {
+      store.dispatch(recordLifepathTalentProgress(StepContext.Career));
       Navigation.navigateToPage(PageIdentity.CareerEvent1);
     }
   };
@@ -74,15 +73,11 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
   };
 
   useEffect(() => {
-    if (
-      supportsDeferredTalents(character) &&
-      (isTalentDeferred(character, StepContext.Career) ||
-        character.careerStep?.talent)
-    )
+    if (supportsDeferredTalents(character) && character.careerStep?.talent)
       return;
     store.dispatch(addCharacterTalent(talentModel, StepContext.Career));
-    // This initialization runs on entry or when choosing now, not on every Redux edit.
-  }, [talentModel, deferred]);
+    // Initialize the fixed novice talent on entry; its attribute can be completed at review.
+  }, [talentModel]);
 
   const instruction =
     character.type === CharacterType.Cadet
@@ -109,11 +104,11 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
           </div>
           <div className="col-12 col-lg-6 mt-4">
             <Header level={2}>{t('Construct.other.talent')}</Header>
-            <ChooseTalentLater
+            <OptionalTalentNote
               character={character}
               context={StepContext.Career}
             />
-            {!deferred && (
+            {
               <TalentDescription
                 name={talentModel.localizedDisplayName}
                 description={
@@ -122,10 +117,9 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
                     : talentModel.localizedDescription
                 }
               />
-            )}
+            }
           </div>
-          {character.version === 1 ||
-          isTalentDeferred(character, StepContext.Career) ? undefined : (
+          {character.version === 1 ? undefined : (
             <div className="col-12 col-lg-6 mt-4">
               <Header level={2}>{t('Construct.other.attribute')}</Header>
               <InstructionText

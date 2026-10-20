@@ -1,8 +1,7 @@
-import { ChooseTalentLater } from '../components/deferredTalentSelection';
+import { recordLifepathTalentProgress } from '../state/characterActions';
+import { OptionalTalentNote } from '../components/deferredTalentSelection';
 import {
   supportsDeferredTalents,
-  isTalentDeferred,
-  lifepathTalentError,
   getLifepathTalentChoices,
 } from '../helpers/lifepathTalents';
 import React from 'react';
@@ -173,22 +172,20 @@ const SpeciesDetailsPageBase: React.FC<ISpeciesDetailsProperties> = ({
       return (
         <div>
           <Header level={2}>{t('Construct.other.talents')}</Header>
-          <ChooseTalentLater
+          <OptionalTalentNote
             character={character}
             context={StepContext.Species}
           />
-          {!isTalentDeferred(character, StepContext.Species) && (
-            <SingleTalentSelectionList
-              talents={
-                supportsDeferredTalents(character)
-                  ? getLifepathTalentChoices(character, StepContext.Species)
-                  : talents
-              }
-              construct={character}
-              initialSelection={character.speciesStep?.talent}
-              onSelection={(talent) => onTalentSelected(talent)}
-            />
-          )}
+          <SingleTalentSelectionList
+            talents={
+              supportsDeferredTalents(character)
+                ? getLifepathTalentChoices(character, StepContext.Species)
+                : talents
+            }
+            construct={character}
+            initialSelection={character.speciesStep?.talent}
+            onSelection={(talent) => onTalentSelected(talent)}
+          />
         </div>
       );
     } else {
@@ -361,11 +358,6 @@ const SpeciesDetailsPageBase: React.FC<ISpeciesDetailsProperties> = ({
   };
 
   const onNext = () => {
-    const talentError = lifepathTalentError(character, StepContext.Species);
-    if (talentError) {
-      Dialog.show(talentError);
-      return;
-    }
     if (isSpecialSpecies() && character.speciesStep.originalSpecies == null) {
       Dialog.show(t('SpeciesDetails.error.originalSpecies'));
     } else if (!character.speciesStep?.isAttributeSelectionComplete) {
@@ -373,11 +365,12 @@ const SpeciesDetailsPageBase: React.FC<ISpeciesDetailsProperties> = ({
     } else if (
       isTalentSelectionRequired() &&
       character.speciesStep?.talent == null &&
-      !isTalentDeferred(character, StepContext.Species)
+      !supportsDeferredTalents(character)
     ) {
       Dialog.show(t('Common.error.talent'));
     } else if (
       isTalentSelectionRequired() &&
+      !supportsDeferredTalents(character) &&
       determineSelectedTalentExtraErrors(character.speciesStep?.talent) != null
     ) {
       Dialog.show(
@@ -397,6 +390,7 @@ const SpeciesDetailsPageBase: React.FC<ISpeciesDetailsProperties> = ({
     } else if (character.stereotype === Stereotype.Npc) {
       navigate('/npc/stats');
     } else {
+      store.dispatch(recordLifepathTalentProgress(StepContext.Species));
       Navigation.navigateToPage(PageIdentity.Environment);
     }
   };

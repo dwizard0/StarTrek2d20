@@ -3,7 +3,10 @@ import {
   getLifepathTalentStep,
   supportsDeferredTalents,
 } from '../../helpers/lifepathTalentState';
-import { deferCharacterTalent } from '../characterActions';
+import {
+  deferCharacterTalent,
+  recordLifepathTalentProgress,
+} from '../characterActions';
 import type { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import {
   FinishingStep,
@@ -159,6 +162,17 @@ export const registerTalentReducers = (
       if (action.payload.deferred) step.talent = undefined;
     });
   });
+  builder.addCase(recordLifepathTalentProgress, (state, action) => {
+    if (
+      !state.currentCharacter ||
+      !canDeferTalent(state.currentCharacter.copy(), action.payload.context)
+    )
+      return state;
+    return withCharacter(state, action, (temp) => {
+      const step = getLifepathTalentStep(temp, action.payload.context);
+      step.talentDeferred = !step.talent;
+    });
+  });
   builder.addCase(addCharacterTalent, (state, action) => {
     return withCharacter(state, action, (temp, action) => {
       if (supportsDeferredTalents(temp)) {
@@ -185,7 +199,11 @@ export const registerTalentReducers = (
           temp.careerStep = new CareerStep();
         }
         temp.careerStep.talent = talent;
-        if (original?.talent?.talent === talent?.talent && talent != null) {
+        if (
+          !(t instanceof SelectedTalent) &&
+          original?.talent?.talent === talent?.talent &&
+          talent != null
+        ) {
           temp.careerStep.talent.attribute = original?.talent?.attribute;
         }
       } else if (action.payload.context === StepContext.FinishingTouches) {
