@@ -16,6 +16,7 @@ import {
   supportsDeferredTalents,
 } from '../helpers/lifepathTalents';
 import { TalentEditView } from './talentEditView';
+import { Header } from './header';
 
 export const OptionalTalentNote: React.FC<{
   character: Character;
@@ -32,7 +33,7 @@ export const LifepathTalentReview: React.FC<{ character: Character }> = ({
   const errors = finalLifepathTalentErrors(character);
   return (
     <section className="my-4" aria-label={t('LifepathTalentReview.title')}>
-      <h2>{t('LifepathTalentReview.title')}</h2>
+      <Header level={2}>{t('LifepathTalentReview.title')}</Header>
       <p>{t('LifepathTalentReview.instruction')}</p>
       <p role="status">
         {errors.length
