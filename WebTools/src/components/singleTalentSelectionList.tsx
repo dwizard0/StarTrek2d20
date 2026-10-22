@@ -61,7 +61,15 @@ import { SimpleSystemSelector } from './simpleSystemSelector';
 import { InputFieldAndLabel } from '../common/inputFieldAndLabel';
 import { RichTextEditor } from './richTextEditor';
 
+import {
+  TalentCategoryFilter,
+  matchesTalentFilter,
+} from './talentCategoryFilter';
+import type { TalentFilter } from './talentCategoryFilter';
+
 interface ISingleTalentSelectionProperties {
+  heading?: string;
+  children?: React.ReactNode;
   talents: RankedTalent[];
   construct: Construct;
   initialSelection?: ITalent | SelectedTalent;
@@ -1037,7 +1045,15 @@ export const TalentSelectionRow: React.FC<ITalentSelectionRowProperties> = ({
 
 export const SingleTalentSelectionList: React.FC<
   ISingleTalentSelectionProperties
-> = ({ talents, construct, initialSelection, onSelection }) => {
+> = ({
+  talents,
+  construct,
+  initialSelection,
+  onSelection,
+  heading,
+  children,
+}) => {
+  const [filter, setFilter] = useState<TalentFilter>('all');
   let original = null;
   if (initialSelection == null) {
     // do nothing
@@ -1066,19 +1082,48 @@ export const SingleTalentSelectionList: React.FC<
     onSelection(selection);
   };
 
-  talents = talents.sort(rankedTalentNameCompare);
+  // Filter presentation only: eligibility and selection validation use the full list.
+  const matches = talents.filter(
+    (talent) => !heading || matchesTalentFilter(talent.talentModel, filter),
+  );
+  const selectedOutsideFilter = talents.some(
+    (talent) => talent.name === selection?.talent && !matches.includes(talent),
+  );
+  const visibleTalents = talents
+    .filter(
+      (talent) => matches.includes(talent) || talent.name === selection?.talent,
+    )
+    .sort(rankedTalentNameCompare);
 
-  const talentList = talents.map((t, i) => {
+  const talentList = visibleTalents.map((t) => {
     return (
       <TalentSelectionRow
         talent={t}
         construct={construct}
         onSelection={updateSelection}
         selection={selection}
-        key={'talent-' + i}
+        key={t.name + '-' + (t.rank ?? 0)}
       />
     );
   });
 
-  return <table className="selection-list">{talentList}</table>;
+  return (
+    <>
+      {heading && (
+        <TalentCategoryFilter
+          heading={heading}
+          value={filter}
+          onChange={setFilter}
+        />
+      )}
+      {children}
+      {heading && selectedOutsideFilter && (
+        <p role="status">{t('TalentFilter.selectedOutside')}</p>
+      )}
+      {heading && matches.length === 0 && (
+        <p role="status">{t('TalentFilter.empty')}</p>
+      )}
+      <table className="selection-list">{talentList}</table>
+    </>
+  );
 };

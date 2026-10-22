@@ -147,12 +147,8 @@ const CareerLengthDetailsPageBase: React.FC<ICharacterProperties> = ({
           </div>
 
           <div className="my-3">
-            <Header level={2}>{t('Construct.other.talent')}</Header>
-            <OptionalTalentNote
-              character={character}
-              context={StepContext.Career}
-            />
             <SingleTalentSelectionList
+              heading={t('Construct.other.talent')}
               talents={
                 supportsDeferredTalents(character)
                   ? getLifepathTalentChoices(character, StepContext.Career)
@@ -163,7 +159,12 @@ const CareerLengthDetailsPageBase: React.FC<ICharacterProperties> = ({
               onSelection={(talent) => {
                 onTalentSelected(talent);
               }}
-            />
+            >
+              <OptionalTalentNote
+                character={character}
+                context={StepContext.Career}
+              />
+            </SingleTalentSelectionList>
           </div>
         </>
       );

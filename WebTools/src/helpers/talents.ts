@@ -1297,7 +1297,11 @@ export class Talents {
         new SourcePrerequisite(Source.Core, Source.Core2ndEdition),
       ],
       1,
-      new TalentCategorization(TalentCategory.Department, Department.Science),
+      new TalentCategorization(
+        TalentCategory.Department,
+        Department.Engineering,
+        Department.Science,
+      ),
     ),
     new TalentModel(
       'Intense Scrutiny',
@@ -1311,7 +1315,11 @@ export class Talents {
         new SourcePrerequisite(Source.Core, Source.Core2ndEdition),
       ],
       1,
-      new TalentCategorization(TalentCategory.Department, Department.Science),
+      new TalentCategorization(
+        TalentCategory.Department,
+        Department.Engineering,
+        Department.Science,
+      ),
     ),
     new TalentModel(
       'Jury-Rig',

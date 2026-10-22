@@ -315,12 +315,8 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
   const renderTalents = () => {
     return (
       <div>
-        <Header level={2}>{t('Construct.other.talent')}</Header>
-        <OptionalTalentNote
-          character={character}
-          context={StepContext.Education}
-        />
         <SingleTalentSelectionList
+          heading={t('Construct.other.talent')}
           talents={
             supportsDeferredTalents(character)
               ? getLifepathTalentChoices(character, StepContext.Education)
@@ -331,7 +327,12 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
           onSelection={(talent) => {
             onTalentSelected(talent);
           }}
-        />
+        >
+          <OptionalTalentNote
+            character={character}
+            context={StepContext.Education}
+          />
+        </SingleTalentSelectionList>
       </div>
     );
   };

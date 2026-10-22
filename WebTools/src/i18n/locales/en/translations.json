@@ -6398,5 +6398,9 @@
   "LifepathTalentReview.unselected": "No talent selected.",
   "LifepathTalentReview.remaining_one": "{{count}} talent choice needs attention before finishing.",
   "LifepathTalentReview.remaining_other": "{{count}} talent choices need attention before finishing.",
-  "LifepathTalentReview.complete": "All talent choices are complete."
+  "LifepathTalentReview.complete": "All talent choices are complete.",
+  "TalentFilter.label": "Filter talents",
+  "TalentFilter.all": "All talents",
+  "TalentFilter.selectedOutside": "Your selected talent is shown below even though it is outside this filter.",
+  "TalentFilter.empty": "No available talents match this filter. Choose All talents to see the full list."
 }

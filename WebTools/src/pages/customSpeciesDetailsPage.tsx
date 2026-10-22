@@ -94,14 +94,8 @@ const CustomSpeciesDetailsPageBase: React.FC<
 
       return talents.length > 0 && isTalentSelectionRequired() ? (
         <div>
-          <Header level={2}>{t('Construct.other.talents')}</Header>
-          <div>{renderCrossSpeciesCheckbox()}</div>
-          {esotericTalentOption}
-          <OptionalTalentNote
-            character={character}
-            context={StepContext.Species}
-          />
           <SingleTalentSelectionList
+            heading={t('Construct.other.talents')}
             talents={
               supportsDeferredTalents(character)
                 ? getLifepathTalentChoices(character, StepContext.Species)
@@ -110,7 +104,14 @@ const CustomSpeciesDetailsPageBase: React.FC<
             construct={character}
             initialSelection={character.speciesStep?.talent}
             onSelection={(talent) => onTalentSelected(talent)}
-          />
+          >
+            <div>{renderCrossSpeciesCheckbox()}</div>
+            {esotericTalentOption}
+            <OptionalTalentNote
+              character={character}
+              context={StepContext.Species}
+            />
+          </SingleTalentSelectionList>
         </div>
       ) : (
         <div>
