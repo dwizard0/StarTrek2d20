@@ -101,7 +101,7 @@ const AttributesAndDisciplinesPageBase: React.FC<ICharacterProperties> = ({
       isTalentSelectionNeeded() &&
       character?.finishingStep?.talent == null
     ) {
-      Dialog.show(t('SoloFinishingTouchesPage.errorTalent'));
+      Dialog.show(t('Common.error.talent'));
     } else if (
       isTalentSelectionNeeded() &&
       determineSelectedTalentExtraErrors(character.finishingStep.talent) != null

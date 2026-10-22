@@ -209,7 +209,7 @@ const CareerLengthDetailsPageBase: React.FC<ICharacterProperties> = ({
 
   const onNext = () => {
     if (!supportsDeferredTalents(character) && !talentName) {
-      Dialog.show(t('SoloEducationDetailsPage.errorTalent'));
+      Dialog.show(t('Common.error.talent'));
     } else if (
       !supportsDeferredTalents(character) &&
       determineSelectedTalentExtraErrors(character.careerStep?.talent) != null
