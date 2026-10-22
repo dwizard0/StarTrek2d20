@@ -13,6 +13,7 @@ import { TalentsHelper } from '../../src/helpers/talents';
 import { RankedTalent } from '../../src/helpers/rankedTalent';
 import { Department } from '../../src/helpers/department';
 import { SelectedTalent } from '../../src/common/selectedTalent';
+import { SimpleTalentSelectionList } from '../../src/components/simpleTalentSelectionList';
 
 jest.mock('react-markdown', () => ({
   __esModule: true,
@@ -116,4 +117,56 @@ it('explains an empty result and how to restore the full list', () => {
   expect(html).not.toContain('Tough');
   expect(html).toContain('No available talents match');
   expect(html).toContain('Choose All talents');
+});
+
+function renderFilteredEditor(filter, selected?: string, heading = 'Talents') {
+  jest
+    .spyOn(React, 'useState')
+    .mockImplementationOnce(() => [filter, jest.fn()]);
+  const change = jest.fn();
+  const talents = ['Tough', 'Advisor'].map((name) =>
+    TalentsHelper.getTalent(name),
+  );
+  const html = renderToStaticMarkup(
+    <SimpleTalentSelectionList
+      heading={heading}
+      talents={talents}
+      construct={new Character()}
+      initialSelection={selected}
+      allowDeselect={false}
+      onSelection={change}
+    />,
+  );
+  expect(talents.map((talent) => talent.name)).toEqual(['Tough', 'Advisor']);
+  expect(change).not.toHaveBeenCalled();
+  return html;
+}
+
+it('filters the shared editor choices by discipline without changing selection', () => {
+  const html = renderFilteredEditor(Department.Command);
+  expect(html).toContain('Advisor');
+  expect(html).not.toContain('Tough');
+  expect(html).toContain('Filter talents');
+});
+
+it('keeps the current editor talent visible and checked outside the filter', () => {
+  const html = renderFilteredEditor('general', 'Advisor');
+  expect(html).toContain('Advisor');
+  expect(html).toContain('Tough');
+  expect(html).toContain('outside this filter');
+  expect(html).toContain('checked');
+});
+
+it('explains empty editor results', () => {
+  const html = renderFilteredEditor(Department.Medicine);
+  expect(html).toContain('No available talents match');
+  expect(html).not.toContain('Advisor');
+  expect(html).not.toContain('Tough');
+});
+
+it('leaves other simple selection lists unfiltered without an opt-in heading', () => {
+  const html = renderFilteredEditor(Department.Medicine, undefined, '');
+  expect(html).toContain('Advisor');
+  expect(html).toContain('Tough');
+  expect(html).not.toContain('Filter talents');
 });

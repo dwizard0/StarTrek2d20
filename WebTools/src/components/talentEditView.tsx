@@ -34,6 +34,7 @@ export const TalentEditView: React.FC<TalentEditViewProps> = ({
       undefined,
       <div>
         <SimpleTalentSelectionList
+          heading={t('Construct.other.talents')}
           allowDeselect={false}
           construct={character}
           talents={[...choices]}

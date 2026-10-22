@@ -6,8 +6,15 @@ import { replaceDiceWithArrowhead } from '../common/arrowhead';
 import type { Construct } from '../common/construct';
 import { SelectedTalent } from '../common/selectedTalent';
 import type { ITalent } from '../helpers/italent';
+import { t } from 'i18next';
+import {
+  TalentCategoryFilter,
+  matchesTalentFilter,
+} from './talentCategoryFilter';
+import type { TalentFilter } from './talentCategoryFilter';
 
 interface ISimpleTalentSelectionProperties {
+  heading?: string;
   talents: TalentModel[];
   allowDeselect?: boolean;
   construct: Construct;
@@ -23,7 +30,9 @@ export const SimpleTalentSelectionList: React.FC<
   onSelection,
   initialSelection,
   allowDeselect = true,
+  heading,
 }) => {
+  const [filter, setFilter] = useState<TalentFilter>('all');
   const [selection, setSelection] = useState<string | undefined>(
     initialSelection,
   );
@@ -39,15 +48,23 @@ export const SimpleTalentSelectionList: React.FC<
     }
   }, [talents, selection, onSelection]);
 
-  talents = talents.sort((t1, t2) => {
-    if (t1.name === TALENT_NAME_CUSTOM_TALENT) {
-      return 1;
-    } else if (t2.name === TALENT_NAME_CUSTOM_TALENT) {
-      return -1;
-    } else {
-      return t1.localizedName.localeCompare(t2.localizedName);
-    }
-  });
+  const matches = talents.filter(
+    (talent) => !heading || matchesTalentFilter(talent, filter),
+  );
+  const selectedOutsideFilter = talents.some(
+    (talent) => talent.name === selection && !matches.includes(talent),
+  );
+  const visibleTalents = talents
+    .filter((talent) => matches.includes(talent) || talent.name === selection)
+    .sort((t1, t2) => {
+      if (t1.name === TALENT_NAME_CUSTOM_TALENT) {
+        return 1;
+      } else if (t2.name === TALENT_NAME_CUSTOM_TALENT) {
+        return -1;
+      } else {
+        return t1.localizedName.localeCompare(t2.localizedName);
+      }
+    });
 
   const selectTalent = (talent: ITalent) => {
     if (selection === talent.name && allowDeselect) {
@@ -59,7 +76,7 @@ export const SimpleTalentSelectionList: React.FC<
     }
   };
 
-  const talentList = talents.map((t, i) => {
+  const talentList = visibleTalents.map((t) => {
     let prerequisites = undefined;
     t.prerequisites.forEach((p) => {
       const desc = p.describe();
@@ -88,7 +105,7 @@ export const SimpleTalentSelectionList: React.FC<
     });
 
     return (
-      <tr key={i}>
+      <tr key={t.name}>
         <td className="selection-header-small">{t.localizedName}</td>
         <td>
           {lines} {prerequisites}
@@ -106,8 +123,23 @@ export const SimpleTalentSelectionList: React.FC<
   });
 
   return (
-    <table className="selection-list">
-      <tbody>{talentList}</tbody>
-    </table>
+    <>
+      {heading && (
+        <TalentCategoryFilter
+          heading={heading}
+          value={filter}
+          onChange={setFilter}
+        />
+      )}
+      {heading && selectedOutsideFilter && (
+        <p role="status">{t('TalentFilter.selectedOutside')}</p>
+      )}
+      {heading && matches.length === 0 && (
+        <p role="status">{t('TalentFilter.empty')}</p>
+      )}
+      <table className="selection-list">
+        <tbody>{talentList}</tbody>
+      </table>
+    </>
   );
 };
