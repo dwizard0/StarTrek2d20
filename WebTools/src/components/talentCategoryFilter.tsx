@@ -21,8 +21,10 @@ export const TalentCategoryFilter: React.FC<{
   value: TalentFilter;
   onChange: (value: TalentFilter) => void;
 }> = ({ heading, value, onChange }) => (
-  <h2 className="header-text talent-filter-heading">
-    <div>{heading}</div>
+  <div className="talent-filter-heading">
+    <h2 className="header-text">
+      <div>{heading}</div>
+    </h2>
     <label>
       <span>{t('TalentFilter.label')}</span>
       <select
@@ -52,5 +54,5 @@ export const TalentCategoryFilter: React.FC<{
         ))}
       </select>
     </label>
-  </h2>
+  </div>
 );

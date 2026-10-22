@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import type { Character } from '../common/character';
 import { Stereotype } from '../common/construct';
 import { CharacterType } from '../common/characterType';
@@ -43,15 +44,15 @@ export function getLifepathTalentStep(
 export function lifepathTalentLabel(context: StepContext) {
   switch (context) {
     case StepContext.Species:
-      return 'Species';
+      return t('LifepathTalentReview.origin.species');
     case StepContext.EarlyOutlook:
-      return 'Upbringing / early outlook';
+      return t('LifepathTalentReview.origin.earlyOutlook');
     case StepContext.Education:
-      return 'Education';
+      return t('LifepathTalentReview.origin.education');
     case StepContext.Career:
-      return 'Career length';
+      return t('LifepathTalentReview.origin.career');
     default:
-      return 'Finishing touches';
+      return t('LifepathTalentReview.origin.finishingTouches');
   }
 }
 

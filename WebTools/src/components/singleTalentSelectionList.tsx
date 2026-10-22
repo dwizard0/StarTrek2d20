@@ -1,3 +1,4 @@
+import { talentSelectionKey } from '../helpers/talentSelectionKey';
 import React, { useEffect, useState } from 'react';
 import { CheckBox } from './checkBox';
 import {
@@ -1102,7 +1103,7 @@ export const SingleTalentSelectionList: React.FC<
         construct={construct}
         onSelection={updateSelection}
         selection={selection}
-        key={t.name + '-' + (t.rank ?? 0)}
+        key={talentSelectionKey(t.talentModel) + '-' + (t.rank ?? 0)}
       />
     );
   });

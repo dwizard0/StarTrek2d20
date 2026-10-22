@@ -97,6 +97,7 @@ const FinishPageBase: React.FC<IFinishPageProperties> = ({ character }) => {
   const showViewPage = () => {
     if (!validateTalents()) return;
     setTimeout(() => {
+      // State may change while the timer or export module is loading.
       if (!validateTalents()) return;
       const c = store.getState().character.currentCharacter;
       const value = marshaller.encodeMainCharacter(c);
@@ -343,6 +344,7 @@ const FinishPageBase: React.FC<IFinishPageProperties> = ({ character }) => {
         ({ CharacterSheetRegistry }) => {
           setLoadingExport(false);
           setTimeout(() => {
+            // State may change while the timer or export module is loading.
             if (!validateTalents()) return;
             const c = store.getState().character.currentCharacter;
             store.dispatch(saveCharacterToLocalStorage(c));

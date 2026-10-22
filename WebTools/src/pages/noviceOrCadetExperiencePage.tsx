@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { OptionalTalentNote } from '../components/deferredTalentSelection';
 import { supportsDeferredTalents } from '../helpers/lifepathTalentState';
 import { Navigation } from '../common/navigator';
 import Button from 'react-bootstrap/Button';
@@ -75,8 +74,8 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
   useEffect(() => {
     if (supportsDeferredTalents(character) && character.careerStep?.talent)
       return;
-    store.dispatch(addCharacterTalent(talentModel, StepContext.Career));
     // Initialize the fixed novice talent on entry; its attribute can be completed at review.
+    store.dispatch(addCharacterTalent(talentModel, StepContext.Career));
   }, [talentModel]);
 
   const instruction =
@@ -104,20 +103,17 @@ const NoviceOrCadetExperiencePageBase: React.FC<ICharacterProperties> = ({
           </div>
           <div className="col-12 col-lg-6 mt-4">
             <Header level={2}>{t('Construct.other.talent')}</Header>
-            <OptionalTalentNote
-              character={character}
-              context={StepContext.Career}
+            {supportsDeferredTalents(character) && (
+              <p>{t('LifepathTalentReview.fixedNovice')}</p>
+            )}
+            <TalentDescription
+              name={talentModel.localizedDisplayName}
+              description={
+                character.version > 1
+                  ? talentModel.localizedDescription2e
+                  : talentModel.localizedDescription
+              }
             />
-            {
-              <TalentDescription
-                name={talentModel.localizedDisplayName}
-                description={
-                  character.version > 1
-                    ? talentModel.localizedDescription2e
-                    : talentModel.localizedDescription
-                }
-              />
-            }
           </div>
           {character.version === 1 ? undefined : (
             <div className="col-12 col-lg-6 mt-4">

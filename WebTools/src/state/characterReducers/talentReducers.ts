@@ -3,10 +3,7 @@ import {
   getLifepathTalentStep,
   supportsDeferredTalents,
 } from '../../helpers/lifepathTalentState';
-import {
-  deferCharacterTalent,
-  recordLifepathTalentProgress,
-} from '../characterActions';
+import { recordLifepathTalentProgress } from '../characterActions';
 import type { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import {
   FinishingStep,
@@ -148,18 +145,6 @@ export const registerTalentReducers = (
       if (talent) {
         talent.value = action.payload.value;
       }
-    });
-  });
-  builder.addCase(deferCharacterTalent, (state, action) => {
-    if (
-      !state.currentCharacter ||
-      !canDeferTalent(state.currentCharacter.copy(), action.payload.context)
-    )
-      return state;
-    return withCharacter(state, action, (temp, action) => {
-      const step = getLifepathTalentStep(temp, action.payload.context);
-      step.talentDeferred = action.payload.deferred;
-      if (action.payload.deferred) step.talent = undefined;
     });
   });
   builder.addCase(recordLifepathTalentProgress, (state, action) => {

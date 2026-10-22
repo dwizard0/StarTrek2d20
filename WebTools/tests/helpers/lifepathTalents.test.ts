@@ -32,7 +32,6 @@ import {
 import { characterReducer } from '../../src/state/characterReducer';
 import {
   addCharacterTalent,
-  deferCharacterTalent,
   recordLifepathTalentProgress,
   updateCharacterGeneralEditTalentChange,
   setCharacterName,
@@ -46,6 +45,7 @@ import { store } from '../../src/state/store';
 import { pushPage, popPage } from '../../src/common/pageHistory';
 import { PageIdentity } from '../../src/pages/pageIdentity';
 import i18next from 'i18next';
+import translations from '../../src/i18n/locales/en/translations.json';
 
 Object.defineProperty(global, 'window', {
   value: {
@@ -96,7 +96,10 @@ function fillTalents(c: Character) {
 }
 
 beforeAll(async () => {
-  await i18next.init({ lng: 'en', resources: { en: { translation: {} } } });
+  await i18next.init({
+    lng: 'en',
+    resources: { en: { translation: translations } },
+  });
 });
 beforeEach(() => {
   store.dispatch(setSources([Source.Core2ndEdition]));
@@ -115,7 +118,8 @@ test('all deferred origins survive a single compressed save, including a real sp
     StepContext.Career,
   ];
   const deferred = contexts.reduce(
-    (current, context) => reduce(current, deferCharacterTalent(context)),
+    (current, context) =>
+      reduce(current, recordLifepathTalentProgress(context)),
     c,
   );
   const restored = marshaller.decodeCharacter(
@@ -159,7 +163,7 @@ test('malformed saved deferrals cannot add a finishing slot or override a select
 test('a blank slot can be skipped, but final validation still requires a choice', () => {
   const c = character();
   expect(lifepathTalentError(c, StepContext.Education)).toBeUndefined();
-  const next = reduce(c, deferCharacterTalent(StepContext.Education));
+  const next = reduce(c, recordLifepathTalentProgress(StepContext.Education));
   expect(isTalentDeferred(next, StepContext.Education)).toBe(true);
   expect(lifepathTalentError(next, StepContext.Education)).toBeUndefined();
   expect(lifepathTalentError(next, StepContext.Education, true)).toMatch(
@@ -177,8 +181,11 @@ test.each([
   (context) => {
     const c = character();
     getLifepathTalentStep(c, context).talent = new SelectedTalent('Tough');
-    let next = reduce(c, deferCharacterTalent(context));
-    expect(getLifepathTalentStep(next, context).talent).toBeUndefined();
+    let next = reduce(
+      reduce(c, addCharacterTalent(undefined, context)),
+      recordLifepathTalentProgress(context),
+    );
+    expect(getLifepathTalentStep(next, context).talent).toBeFalsy();
     expect(getLifepathTalentStep(c, context).talent.talent).toBe('Tough');
     next = reduce(next.copy(), setCharacterName('Test'));
     expect(isTalentDeferred(next, context)).toBe(true);
@@ -199,7 +206,7 @@ test('species choices retain species-ability restrictions and provenance', () =>
     Source.Core2ndEdition,
     ['Tough'],
   );
-  let next = reduce(c, deferCharacterTalent(StepContext.Species));
+  let next = reduce(c, recordLifepathTalentProgress(StepContext.Species));
   expect(next.copy().speciesStep.talentDeferred).toBe(true);
   expect(names(next, StepContext.Species)).toEqual(['Tough']);
   next = reduce(
@@ -312,7 +319,10 @@ test('repeated options and missing talent details are rejected', () => {
 test('all four ordinary 2e talent slots must be resolved, and no choice leaks into finishing touches', () => {
   const c = fillTalents(character());
   expect(finalLifepathTalentErrors(c)).toEqual([]);
-  const deferred = reduce(c, deferCharacterTalent(StepContext.Education));
+  const deferred = reduce(
+    reduce(c, addCharacterTalent(undefined, StepContext.Education)),
+    recordLifepathTalentProgress(StepContext.Education),
+  );
   expect(finalLifepathTalentErrors(deferred)).toHaveLength(1);
   const resolved = reduce(
     deferred,
@@ -323,7 +333,10 @@ test('all four ordinary 2e talent slots must be resolved, and no choice leaks in
 });
 
 test('compressed serialization rehydrates pending flags and selected talents; older saves default to no deferral', () => {
-  const c = reduce(character(), deferCharacterTalent(StepContext.Education));
+  const c = reduce(
+    character(),
+    recordLifepathTalentProgress(StepContext.Education),
+  );
   c.upbringingStep.talent = SelectedTalent.createWithDepartment(
     'Bold',
     Department.Command,
@@ -343,12 +356,15 @@ test('compressed serialization rehydrates pending flags and selected talents; ol
 });
 
 test('revisiting same education/career keeps deferral, replacing the step resets it', () => {
-  let c = reduce(character(), deferCharacterTalent(StepContext.Education));
+  let c = reduce(
+    character(),
+    recordLifepathTalentProgress(StepContext.Education),
+  );
   c = reduce(c, setCharacterEducation(Track.Command, false));
   expect(c.educationStep.talentDeferred).toBe(true);
   c = reduce(c, setCharacterEducation(Track.Operations, false));
   expect(c.educationStep.talentDeferred).toBe(false);
-  c = reduce(c, deferCharacterTalent(StepContext.Career));
+  c = reduce(c, recordLifepathTalentProgress(StepContext.Career));
   c = reduce(c, setCharacterCareerLength(Career.Experienced));
   expect(c.careerStep.talentDeferred).toBe(true);
   c = reduce(c, setCharacterCareerLength(Career.Veteran));
@@ -362,7 +378,7 @@ test('changing species drops stale deferral and normal page history remains usab
     Source.Core2ndEdition,
     ['Tough'],
   );
-  let next = reduce(c, deferCharacterTalent(StepContext.Species));
+  let next = reduce(c, recordLifepathTalentProgress(StepContext.Species));
   const history = pushPage(
     [],
     PageIdentity.SpeciesDetails,
@@ -383,7 +399,7 @@ test.each([
   const c = character();
   c.stereotype = stereotype;
   if (stereotype === Stereotype.MainCharacter) c.version = 1;
-  const next = reduce(c, deferCharacterTalent(StepContext.Education));
+  const next = reduce(c, recordLifepathTalentProgress(StepContext.Education));
   expect(next).toBe(c);
   expect(canDeferTalent(c, StepContext.Education)).toBe(false);
   expect(finalLifepathTalentErrors(c)).toEqual([]);

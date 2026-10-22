@@ -1,3 +1,4 @@
+import { talentSelectionKey } from '../helpers/talentSelectionKey';
 import React, { useEffect, useState } from 'react';
 import { CheckBox } from './checkBox';
 import type { TalentModel } from '../helpers/talentModel';
@@ -105,7 +106,7 @@ export const SimpleTalentSelectionList: React.FC<
     });
 
     return (
-      <tr key={t.name}>
+      <tr key={talentSelectionKey(t)}>
         <td className="selection-header-small">{t.localizedName}</td>
         <td>
           {lines} {prerequisites}

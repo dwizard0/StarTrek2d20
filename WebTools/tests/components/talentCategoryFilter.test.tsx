@@ -64,7 +64,9 @@ it('renders a labelled select in the orange heading with all eight choices', () 
   const html = renderToStaticMarkup(
     <TalentCategoryFilter heading="Talents" value="all" onChange={() => {}} />,
   );
-  expect(html).toContain('header-text talent-filter-heading');
+  expect(html).toContain('talent-filter-heading');
+  expect(html).toContain('<h2 class="header-text"><div>Talents</div></h2>');
+  expect(html.indexOf('</h2>')).toBeLessThan(html.indexOf('<label>'));
   expect(html).toContain('<label>');
   expect(html).toContain('Filter talents');
   expect(html.match(/<option /g)).toHaveLength(8);

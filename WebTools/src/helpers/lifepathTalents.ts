@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import type { Character } from '../common/character';
 import { CharacterType } from '../common/characterType';
 import { determineSelectedTalentExtraErrors } from '../common/selectedTalentExtraCheck';
@@ -104,13 +105,13 @@ export function lifepathTalentError(
     return undefined;
   const step = getLifepathTalentStep(character, context);
   if (!final && canDeferTalent(character, context)) return undefined;
-  if (!step.talent) return 'Select a talent before finishing.';
+  if (!step.talent) return t('LifepathTalentReview.error.missing');
   if (
     !getLifepathTalentChoices(character, context).some(
       (t) => t.name === step.talent.talent,
     )
   ) {
-    return 'This talent no longer meets this stage’s restrictions, prerequisites, or rank limit.';
+    return t('LifepathTalentReview.error.ineligible');
   }
   const extra = determineSelectedTalentExtraErrors(step.talent, character);
   if (extra) return extra;
@@ -121,7 +122,7 @@ export function lifepathTalentError(
       (!step.talent.customTalentName?.trim() ||
         !step.talent.customTalentDescription?.trim()))
   ) {
-    return 'Complete the talent’s required details.';
+    return t('LifepathTalentReview.error.details');
   }
   if (isMultiSelectionTalent(step.talent) && !step.talent.isCustom) {
     const selection = step.talent;
@@ -136,7 +137,7 @@ export function lifepathTalentError(
           t.selection === selection.selection,
       )
     )
-      return 'Choose a different option for this repeated talent.';
+      return t('LifepathTalentReview.error.duplicate');
   }
   return undefined;
 }
@@ -145,6 +146,13 @@ export function finalLifepathTalentErrors(character: Character): string[] {
   if (!supportsDeferredTalents(character)) return [];
   return lifepathTalentContexts.flatMap((context) => {
     const error = lifepathTalentError(character, context, true);
-    return error ? [`${lifepathTalentLabel(context)}: ${error}`] : [];
+    return error
+      ? [
+          t('LifepathTalentReview.originError', {
+            origin: lifepathTalentLabel(context),
+            error,
+          }),
+        ]
+      : [];
   });
 }

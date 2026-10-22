@@ -375,7 +375,7 @@ const EducationDetailsPageBase: React.FC<ICharacterProperties> = ({
       Dialog.show(t('Common.error.value'));
     } else if (
       !supportsDeferredTalents(character) &&
-      !character.educationStep?.talent == null
+      character.educationStep?.talent == null
     ) {
       Dialog.show(t('SoloEducationDetailsPage.errorTalent'));
     } else {

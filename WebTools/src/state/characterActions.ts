@@ -483,13 +483,6 @@ export const modifyCharacterAddAdvancement = createAction(
   },
 );
 
-export const deferCharacterTalent = createAction(
-  'DEFER_CHARACTER_TALENT',
-  (context: StepContext, deferred: boolean = true) => ({
-    payload: { context, deferred },
-  }),
-);
-
 // Record skipped choices when advancing, without discarding partially edited talents.
 export const recordLifepathTalentProgress = createAction(
   'RECORD_LIFEPATH_TALENT_PROGRESS',

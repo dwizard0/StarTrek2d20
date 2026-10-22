@@ -1303,8 +1303,8 @@ export class Talents {
       1,
       new TalentCategorization(
         TalentCategory.Department,
-        Department.Engineering,
         Department.Science,
+        Department.Engineering,
       ),
     ),
     new TalentModel(
@@ -1321,8 +1321,8 @@ export class Talents {
       1,
       new TalentCategorization(
         TalentCategory.Department,
-        Department.Engineering,
         Department.Science,
+        Department.Engineering,
       ),
     ),
     new TalentModel(
