@@ -83,7 +83,7 @@ export const TalentEditView: React.FC<TalentEditViewProps> = ({
           />
         </>
       ) : (
-        <p>{t('LifepathTalentReview.unselected')}</p>
+        <p>{t('TalentEdit.unselected')}</p>
       )}
       {error && (
         <p className="text-warning" role="status">
