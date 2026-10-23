@@ -172,3 +172,35 @@ it('leaves other simple selection lists unfiltered without an opt-in heading', (
   expect(html).toContain('Tough');
   expect(html).not.toContain('Filter talents');
 });
+
+it.each([
+  [
+    'step lists',
+    () => (
+      <SingleTalentSelectionList
+        heading="Talent"
+        talents={[]}
+        construct={new Character()}
+        onSelection={jest.fn()}
+      />
+    ),
+  ],
+  [
+    'the shared editor',
+    () => (
+      <SimpleTalentSelectionList
+        heading="Talents"
+        talents={[]}
+        construct={new Character()}
+        onSelection={jest.fn()}
+      />
+    ),
+  ],
+])(
+  'does not suggest choosing All talents when %s are already unfiltered',
+  (_, list) => {
+    const html = renderToStaticMarkup(list());
+    expect(html).toContain('No talents are available for this choice.');
+    expect(html).not.toContain('Choose All talents');
+  },
+);

@@ -6403,6 +6403,7 @@
     "TalentFilter.all": "All talents",
     "TalentFilter.selectedOutside": "Your selected talent is shown below even though it is outside this filter.",
     "TalentFilter.empty": "No available talents match this filter. Choose All talents to see the full list.",
+    "TalentFilter.none": "No talents are available for this choice.",
     "LifepathTalentReview.origin.species": "Species",
     "LifepathTalentReview.origin.earlyOutlook": "Upbringing / early outlook",
     "LifepathTalentReview.origin.education": "Education",

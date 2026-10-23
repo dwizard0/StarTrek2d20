@@ -502,3 +502,30 @@ test('General Edit updates the upbringing talent without overwriting its focus',
   expect(next.upbringingStep.focus).toBe('Computers');
   expect(c.upbringingStep.talent.talent).toBe('Tough');
 });
+
+test.each([
+  [Career.Veteran, 'Veteran'],
+  [Career.Young, 'Untapped Potential'],
+])(
+  'career talents are offered only in the career length slot (%s)',
+  (career, talent) => {
+    const c = character();
+    c.careerStep.career = career;
+    expect(names(c, StepContext.Career)).toContain(talent);
+    for (const context of [
+      StepContext.EarlyOutlook,
+      StepContext.Education,
+      StepContext.FinishingTouches,
+    ]) {
+      expect(names(c, context)).not.toContain(talent);
+    }
+  },
+);
+
+test('final talent errors show stage names unescaped', () => {
+  const errors = finalLifepathTalentErrors(character());
+  expect(errors).toContain(
+    'Upbringing / early outlook: Select a talent before finishing.',
+  );
+  expect(errors.join('\n')).not.toContain('&#x2F;');
+});

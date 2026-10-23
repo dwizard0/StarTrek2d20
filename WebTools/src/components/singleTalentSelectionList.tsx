@@ -1122,7 +1122,9 @@ export const SingleTalentSelectionList: React.FC<
         <p role="status">{t('TalentFilter.selectedOutside')}</p>
       )}
       {heading && matches.length === 0 && (
-        <p role="status">{t('TalentFilter.empty')}</p>
+        <p role="status">
+          {filter === 'all' ? t('TalentFilter.none') : t('TalentFilter.empty')}
+        </p>
       )}
       <table className="selection-list">{talentList}</table>
     </>

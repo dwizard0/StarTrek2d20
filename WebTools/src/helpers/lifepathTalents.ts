@@ -9,6 +9,7 @@ import { isMultiSelectionTalent } from './isMultiSelectionTalent';
 import { RankedTalent } from './rankedTalent';
 import { Source } from './sources';
 import { SpeciesHelper } from './species';
+import { TalentCategory } from './talentCategory';
 import type { TalentModel } from './talentModel';
 import { TalentsHelper } from './talents';
 
@@ -79,6 +80,14 @@ export function getLifepathTalentChoices(
           t.name === 'Childhood Insight');
       return granted || t.isPrerequisiteFulfilled(candidate);
     })
+    .filter(
+      // Career talents (Veteran, Untapped Potential, Childhood Insight) come
+      // only from the career length slot; offering them elsewhere could leave
+      // that slot with no valid choice.
+      (t) =>
+        context === StepContext.Career ||
+        t.category?.category !== TalentCategory.Career,
+    )
     .filter(
       (t) =>
         isMultiSelectionTalent(t) ||
@@ -151,6 +160,7 @@ export function finalLifepathTalentErrors(character: Character): string[] {
           t('LifepathTalentReview.originError', {
             origin: lifepathTalentLabel(context),
             error,
+            interpolation: { escapeValue: false },
           }),
         ]
       : [];
