@@ -60,7 +60,7 @@ it('All retains career choices that are neither General nor Department', () => {
   expect(matchesTalentFilter(veteran, Department.Command)).toBe(false);
 });
 
-it('renders a labelled select in the orange heading with all eight choices', () => {
+it('renders a labelled select in the orange heading with all eleven choices', () => {
   const html = renderToStaticMarkup(
     <TalentCategoryFilter heading="Talents" value="all" onChange={() => {}} />,
   );
@@ -69,7 +69,10 @@ it('renders a labelled select in the orange heading with all eight choices', () 
   expect(html.indexOf('</h2>')).toBeLessThan(html.indexOf('<label>'));
   expect(html).toContain('<label>');
   expect(html).toContain('Filter talents');
-  expect(html.match(/<option /g)).toHaveLength(8);
+  expect(html.match(/<option /g)).toHaveLength(11);
+  expect(html).toContain('<option value="species">Species</option>');
+  expect(html).toContain('<option value="esoteric">Esoteric</option>');
+  expect(html).toContain('<option value="enhancement">Enhancement</option>');
   expect(html).toContain('General');
   expect(html).toContain('Medicine');
 });
@@ -204,3 +207,21 @@ it.each([
     expect(html).not.toContain('Choose All talents');
   },
 );
+
+it.each([
+  ['species', 'Proud and Honorable'],
+  ['esoteric', 'Telepathy2e'],
+  ['enhancement', 'Neural Interface'],
+] as const)('the %s filter matches only that category', (filter, name) => {
+  const talent = TalentsHelper.getTalent(name);
+  expect(matchesTalentFilter(talent, filter)).toBe(true);
+  expect(matchesTalentFilter(talent, 'general')).toBe(false);
+  expect(matchesTalentFilter(talent, Department.Command)).toBe(false);
+  for (const other of ['species', 'esoteric', 'enhancement'] as const) {
+    if (other !== filter)
+      expect(matchesTalentFilter(talent, other)).toBe(false);
+  }
+  expect(matchesTalentFilter(TalentsHelper.getTalent('Tough'), filter)).toBe(
+    false,
+  );
+});

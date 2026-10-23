@@ -4,12 +4,20 @@ import { Department } from '../helpers/department';
 import { TalentCategory } from '../helpers/talentCategory';
 import type { TalentModel } from '../helpers/talentModel';
 
-export type TalentFilter = 'all' | 'general' | Department;
+export type TalentFilter =
+  'all' | 'general' | 'species' | 'esoteric' | 'enhancement' | Department;
+
+const CATEGORY_FILTERS: Record<string, TalentCategory> = {
+  general: TalentCategory.General,
+  species: TalentCategory.Species,
+  esoteric: TalentCategory.Esoteric,
+  enhancement: TalentCategory.Enhancement,
+};
 
 export function matchesTalentFilter(talent: TalentModel, filter: TalentFilter) {
   if (filter === 'all') return true;
-  if (filter === 'general')
-    return talent.category.category === TalentCategory.General;
+  if (typeof filter === 'string')
+    return talent.category.category === CATEGORY_FILTERS[filter];
   return (
     talent.category.category === TalentCategory.Department &&
     talent.category.includes(filter)
@@ -32,8 +40,8 @@ export const TalentCategoryFilter: React.FC<{
         onChange={(event) => {
           const value = event.target.value;
           onChange(
-            value === 'all' || value === 'general'
-              ? value
+            value === 'all' || value in CATEGORY_FILTERS
+              ? (value as TalentFilter)
               : (Number(value) as Department),
           );
         }}
@@ -52,6 +60,9 @@ export const TalentCategoryFilter: React.FC<{
             {t('Construct.discipline.' + Department[department].toLowerCase())}
           </option>
         ))}
+        <option value="species">{t('TalentCategory.species')}</option>
+        <option value="esoteric">{t('TalentCategory.esoteric')}</option>
+        <option value="enhancement">{t('TalentCategory.enhancement')}</option>
       </select>
     </label>
   </div>
