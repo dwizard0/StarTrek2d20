@@ -116,9 +116,7 @@ function click(tree, text = 'Next') {
 
 test('1e education blocks a missing talent after all other fields are complete', () => {
   click(page(EducationDetailsPage, character(1)));
-  expect(Dialog.show).toHaveBeenCalledWith(
-    i18next.t('Common.error.talent'),
-  );
+  expect(Dialog.show).toHaveBeenCalledWith(i18next.t('Common.error.talent'));
   expect(Navigation.navigateToPage).not.toHaveBeenCalled();
 });
 test('2e main education allows skipping and records the missing choice', () => {
